@@ -1,8 +1,6 @@
 IN R1
-fin
 JZS #20
 SUB R1, R0, R1
 OUT R1
-ici
 JMP #0
 HLT
