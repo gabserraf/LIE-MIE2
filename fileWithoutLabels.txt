@@ -1,6 +1,8 @@
 IN R1
-JZS fin
+fin
+JZS #20
 SUB R1, R0, R1
 OUT R1
-JMP ici
+ici
+JMP #0
 HLT

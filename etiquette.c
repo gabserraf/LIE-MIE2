@@ -8,7 +8,8 @@
 void extractlabel (char ligne[T_MAX], char label[T_MAX]);
 int nbLinesPerFile (char filename[T_MAX]);
 void removeLabelsFromFile (char filename[T_MAX]);
-void removeLabelFromLine (char line[T_MAX]) ;
+void removeLabelFromLine (char line[T_MAX]);
+void changeLabelFromLine(char line[T_MAX], int labelAdress);
 
 /*
 int detectLabelError (char ligne[T_MAX]) {
@@ -87,6 +88,8 @@ void removeLabelsFromFile (char filename[T_MAX]) {
 	int lineCounter = 0;
 	char listIndex[nbLinesPerFile(filename)][T_MAX];
 	char label[T_MAX];
+	char * token = NULL;
+	int labelAdress;
 
 	/*
 	 * store labels
@@ -103,7 +106,7 @@ void removeLabelsFromFile (char filename[T_MAX]) {
 		extractlabel(line, label);
 		strcpy(listIndex[lineCounter], label);
 		lineCounter++;
-	}	
+	}
 
 	fclose(file);
 
@@ -112,25 +115,32 @@ void removeLabelsFromFile (char filename[T_MAX]) {
 	 */
 
 	newFile = fopen("fileWithoutLabels.txt", "w");
-	file = fopen(filename, "r");
-	// char * tmp = NULL;
-	// int i;
+	file = fopen(filename, "r");	
 
 	while ((read = getline(&line, &len, file)) != -1) {
+		
+		labelAdress = -1;
 		removeLabelFromLine(line);
-		/*
+		
 		if (line[0] == 'J') {
-			tmp = strtok(line, " ");
-			tmp = strtok(NULL, " ");
-			if (ContainsLabel(listIndex,tmp) != -1) {
-				i = ContainsLabel(listIndex,tmp);
-				i = i*4;
-				ChangeLabelFromLine(line,tmp,i);
-				fputs(line,NewFile);
+
+			token = strtok(line, " \n");
+			token = strtok(NULL, " \n");
+
+			for (int i = 0; i < lineCounter; i++) {
+				if (strcmp(listIndex[i], token) == 0) labelAdress = 4*i;
 			}
-		} else fputs(line,NewFile);
-		*/
-		fputs(line, newFile);
+
+			if (labelAdress != -1) {
+				changeLabelFromLine(line, labelAdress);
+			}
+
+			fputs(line, newFile);
+
+		} else {
+			fputs(line, newFile);
+		}
+
 	}
 	
 
@@ -177,6 +187,35 @@ void removeLabelFromLine (char line[T_MAX]) {
 
 }
 
+void changeLabelFromLine(char line[T_MAX], int labelAdress) {
+
+	/*
+	 * variables
+	 */
+
+	char newLine[T_MAX];
+	char * token = NULL;
+	char adresse[T_MAX] = " #\0";
+	char strLabelAdr[T_MAX];
+
+	/*
+	 * code
+	 */
+
+	token = strtok(line, " ");
+	sprintf(strLabelAdr, "%d", labelAdress);
+	strcat(adresse, strLabelAdr);
+	strcat(adresse, "\n");
+	strcat(newLine, token);
+	strcat(newLine, adresse);
+
+	/*
+	 * end
+	 */
+
+	strcpy(line, newLine);
+
+}
 
 
 int main(void) {
