@@ -9,9 +9,6 @@ void extractlabel (char ligne[T_MAX], char label[T_MAX]);
 int nbLinesPerFile (char filename[T_MAX]);
 void removeLabelsFromFile (char filename[T_MAX]);
 void removeLabelFromLine (char line[T_MAX]) ;
-void ChangeLabelFromLine (char line[T_MAX],char label[T_MAX], int n);
-int ContainsLabel (char line[T_MAX][T_MAX],char label[T_MAX]);
-
 
 /*
 int detectLabelError (char ligne[T_MAX]) {
@@ -27,6 +24,7 @@ int detectLabelError (char ligne[T_MAX]) {
 */
 
 void extractlabel (char ligne[T_MAX], char label[T_MAX]) {
+	
 	if (strstr (ligne,":")) {
 		int counter = 0;	
 		while (ligne[counter] != ':') {
@@ -35,6 +33,7 @@ void extractlabel (char ligne[T_MAX], char label[T_MAX]) {
 		}
 		label[counter] = '\0';
 	}
+
 }
 
 int nbLinesPerFile (char filename[T_MAX]) {
@@ -71,6 +70,7 @@ int nbLinesPerFile (char filename[T_MAX]) {
 	if (line) free(line);
 
 	return lineCounter;
+
 }
 
 void removeLabelsFromFile (char filename[T_MAX]) {
@@ -80,6 +80,7 @@ void removeLabelsFromFile (char filename[T_MAX]) {
 	 */
 
 	FILE * file;
+	FILE * newFile;
 	char * line = NULL;
 	size_t len = 0;
 	ssize_t read;
@@ -88,7 +89,7 @@ void removeLabelsFromFile (char filename[T_MAX]) {
 	char label[T_MAX];
 
 	/*
-	 * code
+	 * store labels
 	 */
 
 	file = fopen(filename, "r");
@@ -102,19 +103,22 @@ void removeLabelsFromFile (char filename[T_MAX]) {
 		extractlabel(line, label);
 		strcpy(listIndex[lineCounter], label);
 		lineCounter++;
-	}
-	if (line) free(line);
+	}	
 
 	fclose(file);
 
+	/*
+	 * create new file
+	 */
 
-	FILE* NewFile = fopen("Newtext.txt", "w");
+	newFile = fopen("fileWithoutLabels.txt", "w");
 	file = fopen(filename, "r");
-	char* tmp = NULL;
-	int i;
+	// char * tmp = NULL;
+	// int i;
 
 	while ((read = getline(&line, &len, file)) != -1) {
 		removeLabelFromLine(line);
+		/*
 		if (line[0] == 'J') {
 			tmp = strtok(line, " ");
 			tmp = strtok(NULL, " ");
@@ -125,32 +129,42 @@ void removeLabelsFromFile (char filename[T_MAX]) {
 				fputs(line,NewFile);
 			}
 		} else fputs(line,NewFile);
+		*/
+		fputs(line, newFile);
 	}
-	fclose(NewFile);
-
-
+	
 
 	/*
 	 * end
 	 */
 
-	//if (line) free(line);
-
-	//fclose(file);
+	if (line) free(line);
+	fclose(newFile);
+	fclose(file);
 
 }
 
 void removeLabelFromLine (char line[T_MAX]) {
+	
+	/*
+	 * variables
+	 */
+
 	int i = 0;
 	int j = 0;
 	char newLine[T_MAX];
+
+	/*
+	 * code
+	 */
+
 	if (strstr(line, ":")) {
 		while (line[i] != ':') {
 			i++;
 		}
 		i++;
 	}
-	while (line[i] == ' ') {
+	while (line[i] == ' ' || line[i] == '\t') {
 		i++;
 	}
 	while (line[i] != '\0') {
@@ -160,45 +174,12 @@ void removeLabelFromLine (char line[T_MAX]) {
 	}
 	newLine[j] = '\0';
 	strcpy(line, newLine);
+
 }
 
-int ContainsLabel (char line[T_MAX][T_MAX],char label[T_MAX]) {
-	int i = 0;
-	while (strcmp(line[i], "\0") != 0) {
-		if (strcmp(line[i], label) == 0) return i;
-		i++;
-	}
-	return -1;
-}
 
-void ChangeLabelFromLine (char line[T_MAX],char label[T_MAX], int n) {
-	int i = 0;
-	int j = 0;
-	int s = 0;
-	int count = 0;
-
-	while (line[i] != '\0') {
-		while (line[i] == label[j]) {
-			count = i;
-			s++;
-			i++;
-			j++;
-		}
-	i++;
-	}
-	int p = count-s;
-	line[p] = (char) (n);
-	while (s > 0) {
-		line[p] = ' ';
-		s--;
-		p++;
-	}
-}
 
 int main(void) {
 	removeLabelsFromFile("testFile.txt");
 	return 0;
-	}
-
-
-
+}
