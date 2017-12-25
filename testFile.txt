@@ -1,6 +1,6 @@
 ici: IN R1
      JZS fin
-     SUB   R1,  R0,  R1
+     SUB   R1,  R0,  #hFFFF
      OUT   R1
      JMP   ici
 fin: HLT
