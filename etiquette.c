@@ -208,10 +208,9 @@ void removeLabelsFromFile () {
 
 /****** MAIN ******/
 
-/*
+
 int main(void) {
 	proprifyFile("testFile.txt");
 	removeLabelsFromFile();
 	return 0;
 }
-*/
