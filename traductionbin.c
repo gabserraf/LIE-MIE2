@@ -3,21 +3,6 @@
  */
 
 #include "liste.h"
-/*
- * DEFINE
- */
-
-#define T_MAX 512
-
-/*
- * DECLARATIONS
- */
-
-char* bin2hex (char bin[T_MAX]);
-char* dec2bin (int dec, int nbBits);
-int hex2dec (char hex[T_MAX]);
-void translateLine (char line[T_MAX]);
-void translateFile ();
 
 /*
  * FUNCS

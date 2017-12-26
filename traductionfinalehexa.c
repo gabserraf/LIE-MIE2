@@ -1,21 +1,26 @@
-#include "liste.h"
-
 /*
- * DECLARATIONS
+ * INCLUDES
  */
 
-void PutSpace (char line[T_MAX]);
-void TranslateFileBin2Hexa ();
+#include "liste.h"
 
 /*
  * FUNCS
  */
 
+void putSpace (char line[T_MAX]) {
+	
+	/*
+	 * variables
+	 */
 
-void PutSpace (char line[T_MAX]) {
 	char LineCopy[T_MAX] = "";
 	int counter = 0;
 	int index = 0;
+
+	/*
+	 * code
+	 */
 
 	for (int i = 0; i < strlen(line); i++) {
 		LineCopy[index] = line[i];
@@ -28,10 +33,15 @@ void PutSpace (char line[T_MAX]) {
 		}
 	}
 
+	/*
+	 * end
+	 */
+
 	strcpy(line, LineCopy);
+
 }
 
-void TranslateFileBin2Hexa () {
+void translateFileBin2Hexa () {
 
 	/*
 	 * variables
@@ -45,9 +55,8 @@ void TranslateFileBin2Hexa () {
 	char* newLine = NULL ;
 	char LineJump[] = "\n";
 
-
 	/*
-	 * translating
+	 * translate
 	 */
 
 	file = fopen("binFile.txt", "r");
@@ -55,7 +64,7 @@ void TranslateFileBin2Hexa () {
 
 	while ((read = getline(&line, &len, file)) != -1) {
 		newLine = bin2hex(line);
-		PutSpace(newLine);
+		putSpace(newLine);
 		fputs(newLine, newFile);
 		fputs(LineJump,newFile);
 	}
@@ -65,13 +74,10 @@ void TranslateFileBin2Hexa () {
 	 * end
 	 */
 
-
 	fclose(file);
 	fclose(newFile);
+
 }
-
-
-
 
 /****** MAIN ******/
 
@@ -79,5 +85,3 @@ int main(void) {
 	TranslateFileBin2Hexa("binFile.txt");
 	return 0;
 }
-
-

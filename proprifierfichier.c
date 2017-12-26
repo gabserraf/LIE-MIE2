@@ -1,13 +1,8 @@
-#include "liste.h"
-
-
 /*
- * DECLARATIONS
+ * INCLUDES
  */
 
-
-void proprifyLine(char line[T_MAX]);
-void proprifyFile (char filename[T_MAX]);
+#include "liste.h"
 
 /*
  * FUNCS
@@ -30,8 +25,19 @@ void proprifyLine (char line[T_MAX]) {
 
 	while (token != NULL) {
 		strcat(newLine, token);
-		strcat(newLine, " ");
 		token = strtok(NULL, " \t");
+		if (token != NULL) {
+			if (token[0] == ',') {
+				strcat(newLine, ",");
+				if (strlen(token) > 1) {
+					for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
+					token[strlen(token)-1] = '\0';
+				} else {
+					token = strtok(NULL, " \t");
+				}
+			}
+		}
+		strcat(newLine, " ");
 	}
 
 	newLine[strlen(newLine)-1] = '\0';

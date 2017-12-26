@@ -1,91 +1,90 @@
+/*
+ * INCLUDES
+ */
+
 #include "liste.h"
 
 /*
  * DECLARATIONS
  */
 
-int detectLabelErrorFromLine (char line[T_MAX]);
-void detectLabelErrorFromFile (char filename[T_MAX], int* n);
-int detectErrorFromLine (char line[T_MAX]);
 int detectErrorHexaFromChar (char p);
-int detectErrorFromHexa (char token[T_MAX]);
+int detectErrorHexaFromLine (char token[T_MAX]);
+int detectErrorDecFromChar (char p);
+int detectErrorDecFromLine (char token[T_MAX]);
 int detectErrorFromRegister (char token[T_MAX]);
+int detectLabelErrorFromLine (char line[T_MAX]);
+int detectSyntaxErrorFromLine (char line[T_MAX]);
+void detectLabelErrorFromFile (char filename[T_MAX], int* n);
+int command2lineType (char* command);
 
 /*
  * FUNCS
  */
 
+/**
+ * détecte si un char est bien hexadecimal
+ * @params p, le char a tester (char)
+ * @return 1 s'il y a une erreur, 0 sinon
+ */
 int detectErrorHexaFromChar (char p) {
-	if (p == '0') return 0;
-	if (p == '1') return 0;
-	if (p == '2') return 0;
-	if (p == '3') return 0;
-	if (p == '4') return 0;
-	if (p == '5') return 0;
-	if (p == '6') return 0;
-	if (p == '7') return 0;
-	if (p == '8') return 0;
-	if (p == '9') return 0;
-	if (p == 'a' || p == 'A') return 0;
-	if (p == 'b' || p == 'B') return 0;
-	if (p == 'c' || p == 'C') return 0;
-	if (p == 'd' || p == 'D') return 0;
-	if (p == 'e' || p == 'E') return 0;
-	if (p == 'f' || p == 'F') return 0;
+	for (int i = 0; i < 10; i++) {
+		char c = i + '0';
+		if (p == c) return 0;
+	}
+	if (p == 'a' || p == 'A' || p == 'b' || p == 'B' || p == 'c' || p == 'C' || p == 'd' || p == 'D' || p == 'e' || p == 'E' || p == 'f' || p == 'F')
+		return 0;
 	return 1;
 }
 
-int detectErrorFromHexa (char token[T_MAX]) {
+int detectErrorHexaFromLine (char token[T_MAX]) {
+	for (int i = 2; i < strlen(token); i++) token[i-2] = token[i];
+	token[strlen(token)-2] = '\0';
 	if (strlen(token) > 4) return 1;
+	if (strlen(token) == 0) return 1;
 	for (int i = 0; i < strlen(token); i++) {
-		if (detectErrorHexaFromChar(token[i]) == 1) return 1;
+		if (detectErrorHexaFromChar(token[i])) return 1;
 	}
 	return 0;
 }
 
+int detectErrorDecFromChar (char p) {
+	for (int i = 0; i < 10; i++) {
+		char c = i + '0';
+		if (p == c) return 0;
+	}
+	return 1;
+}
+
+int detectErrorDecFromLine (char token[T_MAX]) {
+	for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
+	token[strlen(token)-1] = '\0';
+	if (strlen(token) == 0) return 1;
+	for (int i = 0; i < strlen(token); i++) {
+		if (detectErrorDecFromChar(token[i])) return 1;
+	}
+	return atoi(token) > 65535;
+}
+
 int detectErrorFromRegister (char token[T_MAX]) {
-	if (strcmp(token, "0") == 0) return 0;
-	if (strcmp(token, "1") == 0) return 0;
-	if (strcmp(token, "2") == 0) return 0;
-	if (strcmp(token, "3") == 0) return 0;
-	if (strcmp(token, "4") == 0) return 0;
-	if (strcmp(token, "5") == 0) return 0;
-	if (strcmp(token, "6") == 0) return 0;
-	if (strcmp(token, "7") == 0) return 0;
-	if (strcmp(token, "8") == 0) return 0;
-	if (strcmp(token, "9") == 0) return 0;
-	if (strcmp(token, "10") == 0) return 0;
-	if (strcmp(token, "11") == 0) return 0;
-	if (strcmp(token, "12") == 0) return 0;
-	if (strcmp(token, "13") == 0) return 0;
-	if (strcmp(token, "14") == 0) return 0;
-	if (strcmp(token, "15") == 0) return 0;
-	if (strcmp(token, "16") == 0) return 0;
-	if (strcmp(token, "17") == 0) return 0;
-	if (strcmp(token, "18") == 0) return 0;
-	if (strcmp(token, "19") == 0) return 0;
-	if (strcmp(token, "20") == 0) return 0;
-	if (strcmp(token, "21") == 0) return 0;
-	if (strcmp(token, "22") == 0) return 0;
-	if (strcmp(token, "23") == 0) return 0;
-	if (strcmp(token, "24") == 0) return 0;
-	if (strcmp(token, "25") == 0) return 0;
-	if (strcmp(token, "26") == 0) return 0;
-	if (strcmp(token, "27") == 0) return 0;
-	if (strcmp(token, "28") == 0) return 0;
-	if (strcmp(token, "29") == 0) return 0;
-	if (strcmp(token, "30") == 0) return 0;
-	if (strcmp(token, "31") == 0) return 0;
+	if (token[0] != 'R') return 1;
+	if (strlen(token) < 2) return 1;
+	for (int i = 0; i < strlen(token); i++) token[i-1] = token[i];
+	token[strlen(token)-1] = '\0';
+	for (int i = 0; i < 32; i++) {
+		char s[3];
+		sprintf(s, "%d", i);
+		if (strcmp(token, s) == 0) return 0;
+	}
 	return 1;
 }
 
 int detectLabelErrorFromLine (char line[T_MAX]) {
-	if (strstr(line, " :")) {
-		return 1;
-	}
+	char label[T_MAX] = "";
+	extractlabel(line, label);
+	if (strstr(label, " ")) return 1;
 	return 0;
 }
-
 
 /*
 void detectLabelErrorFromFile (char filename[T_MAX], int* n) {
@@ -162,114 +161,150 @@ void detectLabelErrorFromFile (char filename[T_MAX], int* n) {
 	}
 	fclose(fileCopy); 
 
-} */
+}
+*/
 
-int detectErrorFromLine (char line[T_MAX]) {
-	if (detectLabelErrorFromLine(line) == 1) return 1;
-	proprifyFile(line);
-	char* token = NULL;
-	token = strtok(line, " \n");
+int detectSyntaxErrorFromLine (char line[T_MAX]) {	
+	
+	/*
+	 * variables
+	 */
+	
+	char * token = NULL;
 	int lineType;
 
+	/*
+	 * code
+	 */
 
-	if (strcmp(token, "OR") == 0) lineType = 1;
-	else if (strcmp(token, "XOR") == 0) lineType = 1;
-	else if (strcmp(token, "AND") == 0) lineType = 1;
-	else if (strcmp(token, "ADD") == 0) lineType = 1;
-	else if (strcmp(token, "SUB") == 0) lineType = 1;
-	else if (strcmp(token, "MUL") == 0) lineType = 1;
-	else if (strcmp(token, "DIV") == 0) lineType = 1;
-	else if (strcmp(token, "SHR") == 0) lineType = 1;
-	else if (strcmp(token, "LDB") == 0) lineType = 2;
-	else if (strcmp(token, "LDH") == 0) lineType = 2;
-	else if (strcmp(token, "LDW") == 0) lineType = 2;
-	else if (strcmp(token, "STB") == 0) lineType = 3;
-	else if (strcmp(token, "STH") == 0) lineType = 3;
-	else if (strcmp(token, "STW") == 0) lineType = 3;
-	else if (strcmp(token, "JMP") == 0) lineType = 4;
-	else if (strcmp(token, "JZS") == 0) lineType = 4;
-	else if (strcmp(token, "JZC") == 0) lineType = 4;
-	else if (strcmp(token, "JCS") == 0) lineType = 4;
-	else if (strcmp(token, "JCC") == 0) lineType = 4;
-	else if (strcmp(token, "JNS") == 0) lineType = 4;
-	else if (strcmp(token, "JNC") == 0) lineType = 4;
-	else if (strcmp(token, "IN") == 0) lineType = 5;
-	else if (strcmp(token, "OUT") == 0) lineType = 5;
-	else if (strcmp(token, "RND") == 0) lineType = 1;
-	else if (strcmp(token, "HLT") == 0) lineType = 6;
-	else return 1;
+	proprifyLine(line);
 
-	
+	token = strtok(line, " \n");
+	lineType = command2lineType(token);
+
+	if (lineType == 0) return 1;
 
 	if (lineType == 1) {
-		if (token[0] != 'R') return 1;
-		token = strtok(NULL, " R,\n");
-		printf("%s\n", token);
-		if (detectErrorFromRegister(token) == 0) {
-			token = strtok(NULL, " R,\n#");
-			if (detectErrorFromRegister(token) == 0) {
-				token = strtok(NULL, " R,#h\n");
-				return detectErrorFromRegister(token);
-			}
+		
+		for (int i = 0; i < 2; i++) {
+			token = strtok(NULL, " ");
+			if (token == NULL) return 1;
+			if (token[strlen(token)-1] != ',') return 1;
+			token[strlen(token)-1] = '\0';
+			if (detectErrorFromRegister(token)) return 1;
 		}
+
+		token = strtok(NULL, " ");
+		if (token == NULL) return 1;
+		if (token[0] == 'R') {
+			if (detectErrorFromRegister(token)) return 1;
+		} else if (token[0] == '#') {
+			if (strlen(token) < 2) return 1;
+			if (token[1] == 'h') {
+				if (detectErrorHexaFromLine(token)) return 1;
+			} else {
+				if (detectErrorDecFromLine(token)) return 1;
+			}
+		} else {
+			return 1;
+		}
+
+		token = strtok(NULL, " ");
+		return token != NULL;
+
 	}
 
+	if (lineType == 2) {
+		// TODO
+	}
 
-
-
+	if (lineType == 3) {
+		// TODO
+	}
 
 	if (lineType == 4) {
-		token = strtok(NULL, " \n");
+
+		token = strtok(NULL, " ");
+		if (token == NULL) return 1;
 		if (token[0] == 'R') {
-			if (detectErrorFromRegister(token) == 1) return 1;
-			token = strtok(NULL, " \n");
-			if (token != NULL) return 1;
-			else return 0;
+			if (detectErrorFromRegister(token)) return 1;
 		} else if (token[0] == '#') {
+			if (strlen(token) < 2) return 1;
 			if (token[1] == 'h') {
-				if (strlen(token) > 6) return 1;
-				else {
-					int count = 0;
-					for (int i = 2; i < strlen(token); i++) {
-						if (detectErrorHexaFromChar(token[i]) == 1) return 1;
-					}
-					token = strtok(NULL, " \n");
-					if (token != NULL) return 1;
-					else return 0;
-				}
+				if (detectErrorHexaFromLine(token)) return 1;
+			} else {
+				if (detectErrorDecFromLine(token)) return 1;
 			}
-			else {
-				token = strtok(NULL, " \n");
-				if (token != NULL) return 1;
-				return 0;
-			}
-		}else return 1;
+		} else {
+			return 1;
+		}
+
+		token = strtok(NULL, " ");
+		return token != NULL;
+
 	}
-
-
 
 	if (lineType == 5) {
-		token = strtok(NULL, " R\n");
-		if (detectErrorFromRegister(token) == 1) return 1;
-		token = strtok(NULL, " \n");
-		if (token != NULL) return 1;
-		return 0;
-	}
+		
+		token = strtok(NULL, " ");
+		if (token == NULL) return 1;
+		if (token[strlen(token)-1] != ',') return 1;
+		token[strlen(token)-1] = '\0';
+		if (detectErrorFromRegister(token)) return 1;
 
+		token = strtok(NULL, " ");
+		return token != NULL;
+
+	}
 
 	if (lineType == 6) {
-		if (token == NULL) return 0;
+
+		token = strtok(NULL, " ");
+		return token != NULL;
+
 	}
+
+	/*
+	 * end
+	 */
+
 	return 1;
+
 }
 
+int command2lineType (char* command) {
+	if (strcmp(command, "OR") == 0) return 1;
+	else if (strcmp(command, "XOR") == 0) return 1;
+	else if (strcmp(command, "AND") == 0) return 1;
+	else if (strcmp(command, "ADD") == 0) return 1;
+	else if (strcmp(command, "SUB") == 0) return 1;
+	else if (strcmp(command, "MUL") == 0) return 1;
+	else if (strcmp(command, "DIV") == 0) return 1;
+	else if (strcmp(command, "SHR") == 0) return 1;
+	else if (strcmp(command, "LDB") == 0) return 2;
+	else if (strcmp(command, "LDH") == 0) return 2;
+	else if (strcmp(command, "LDW") == 0) return 2;
+	else if (strcmp(command, "STB") == 0) return 3;
+	else if (strcmp(command, "STH") == 0) return 3;
+	else if (strcmp(command, "STW") == 0) return 3;
+	else if (strcmp(command, "JMP") == 0) return 4;
+	else if (strcmp(command, "JZS") == 0) return 4;
+	else if (strcmp(command, "JZC") == 0) return 4;
+	else if (strcmp(command, "JCS") == 0) return 4;
+	else if (strcmp(command, "JCC") == 0) return 4;
+	else if (strcmp(command, "JNS") == 0) return 4;
+	else if (strcmp(command, "JNC") == 0) return 4;
+	else if (strcmp(command, "IN") == 0) return 5;
+	else if (strcmp(command, "OUT") == 0) return 5;
+	else if (strcmp(command, "RND") == 0) return 1;
+	else if (strcmp(command, "HLT") == 0) return 6;
+	else return 0;
+}
 
 /******** MAIN ********/
 
 int main(void) {
-	char p[] = "    JZS      #h7   ";
-	int i = detectErrorFromLine(p);
-	printf("%d",i);
-
+	char p[T_MAX] = "JMP #h\0";
+	printf("%d\n", detectSyntaxErrorFromLine(p));
 	return 0;
 }

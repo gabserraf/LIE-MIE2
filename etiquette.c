@@ -3,21 +3,6 @@
  */
 
 #include "liste.h"
-/*
- * DEFINE
- */
-
-#define T_MAX 512
-
-/*
- * DECLARATIONS
- */
-
-int nbLinesPerFile (char filename[T_MAX]);
-void extractlabel (char ligne[T_MAX], char label[T_MAX]);
-void removeLabelFromLine (char line[T_MAX]);
-void changeLabelFromLine (char line[T_MAX], int labelAdress);
-void removeLabelsFromFile ();
 
 /*
  * FUNCS
@@ -61,12 +46,12 @@ int nbLinesPerFile (char filename[T_MAX]) {
 }
 
 
-void extractlabel (char ligne[T_MAX], char label[T_MAX]) {
+void extractlabel (char line[T_MAX], char label[T_MAX]) {
 	
-	if (strstr (ligne,":")) {
+	if (strstr(line, ":")) {
 		int counter = 0;	
-		while (ligne[counter] != ':') {
-			label[counter] = ligne[counter];
+		while (line[counter] != ':') {
+			label[counter] = line[counter];
 			counter++;
 		}
 		label[counter] = '\0';
@@ -223,8 +208,10 @@ void removeLabelsFromFile () {
 
 /****** MAIN ******/
 
+/*
 int main(void) {
 	proprifyFile("testFile.txt");
 	removeLabelsFromFile();
 	return 0;
-} 
+}
+*/
