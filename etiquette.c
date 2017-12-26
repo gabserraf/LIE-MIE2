@@ -2,10 +2,7 @@
  * INCLUDES
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include "liste.h"
 /*
  * DEFINE
  */
@@ -17,8 +14,6 @@
  */
 
 int nbLinesPerFile (char filename[T_MAX]);
-void proprifyLine(char ligne[T_MAX]);
-void proprifyFile (char filename[T_MAX]);
 void extractlabel (char ligne[T_MAX], char label[T_MAX]);
 void removeLabelFromLine (char line[T_MAX]);
 void changeLabelFromLine (char line[T_MAX], int labelAdress);
@@ -65,69 +60,6 @@ int nbLinesPerFile (char filename[T_MAX]) {
 
 }
 
-void proprifyLine (char line[T_MAX]) {
-
-	/*
-	 * variables
-	 */
-
-	char newLine[T_MAX] = "";
-	char * token = NULL;
-
-	/*
-	 * code
-	 */
-
-	token = strtok(line, " \t");
-
-	while (token != NULL) {
-		strcat(newLine, token);
-		strcat(newLine, " ");
-		token = strtok(NULL, " \t");
-	}
-
-	newLine[strlen(newLine)-1] = '\0';
-
-	/*
-	 * end
-	 */
-
-	strcpy(line, newLine);
-
-}
-
-void proprifyFile (char filename[T_MAX]) {
-
-	/*
-	 * variables
-	 */
-
-	FILE * file;
-	FILE * newFile;
-	char * line = NULL;
-	size_t len = 0;
-	ssize_t read;
-
-	/*
-	 * code
-	 */
-	
-	file = fopen(filename, "r");
-	newFile = fopen("proprifiedFile.txt", "w");
-
-	while ((read = getline(&line, &len, file)) != -1) {
-		proprifyLine(line);
-		fputs(line, newFile);
-	}
-
-	/*
-	 * end
-	 */
-
-	fclose(file);
-	fclose(newFile);
-
-}
 
 void extractlabel (char ligne[T_MAX], char label[T_MAX]) {
 	
@@ -295,4 +227,4 @@ int main(void) {
 	proprifyFile("testFile.txt");
 	removeLabelsFromFile();
 	return 0;
-}
+} 

@@ -2,11 +2,7 @@
  * INCLUDES
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
+#include "liste.h"
 /*
  * DEFINE
  */
@@ -174,46 +170,46 @@ void translateLine (char line[T_MAX]) {
 		lineType = 2;
 	} else if (strcmp(token, "STB") == 0) {
 		strcat(newLine, dec2bin(11, 5));
-		lineType = 2;
+		lineType = 3;
 	} else if (strcmp(token, "STH") == 0) {
 		strcat(newLine, dec2bin(12, 5));
-		lineType = 2;
+		lineType = 3;
 	} else if (strcmp(token, "STW") == 0) {
 		strcat(newLine, dec2bin(13, 5));
-		lineType = 2;
+		lineType = 3;
 	} else if (strcmp(token, "JMP") == 0) {
 		strcat(newLine, dec2bin(20, 5));
-		lineType = 3;
+		lineType = 4;
 	} else if (strcmp(token, "JZS") == 0) {
 		strcat(newLine, dec2bin(21, 5));
-		lineType = 3;
+		lineType = 4;
 	} else if (strcmp(token, "JZC") == 0) {
 		strcat(newLine, dec2bin(22, 5));
-		lineType = 3;
+		lineType = 4;
 	} else if (strcmp(token, "JCS") == 0) {
 		strcat(newLine, dec2bin(23, 5));
-		lineType = 3;
+		lineType = 4;
 	} else if (strcmp(token, "JCC") == 0) {
 		strcat(newLine, dec2bin(24, 5));
-		lineType = 3;
+		lineType = 4;
 	} else if (strcmp(token, "JNS") == 0) {
 		strcat(newLine, dec2bin(25, 5));
-		lineType = 3;
+		lineType = 4;
 	} else if (strcmp(token, "JNC") == 0) {
 		strcat(newLine, dec2bin(26, 5));
-		lineType = 3;
+		lineType = 4;
 	} else if (strcmp(token, "IN") == 0) {
 		strcat(newLine, dec2bin(28, 5));
-		lineType = 4;
+		lineType = 5;
 	} else if (strcmp(token, "OUT") == 0) {
 		strcat(newLine, dec2bin(29, 5));
-		lineType = 4;
+		lineType = 5;
 	} else if (strcmp(token, "RND") == 0) {
 		strcat(newLine, dec2bin(30, 5));
 		lineType = 1;
 	} else if (strcmp(token, "HLT") == 0) {
 		strcat(newLine, dec2bin(31, 5));
-		lineType = 5;
+		lineType = 6;
 	}
 
 	if (lineType == 1) {
@@ -246,8 +242,69 @@ void translateLine (char line[T_MAX]) {
 		}
 
 	} else if (lineType == 2) {
-		// TODO
+
+		
+		for (int k = 0; k < 2; k++) {
+			token = strtok(NULL, " ,()\n");
+			for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
+			token[strlen(token)-1] = '\0';
+			strcat(newLine, dec2bin(atoi(token), 5));
+		}
+
+
+		token = strtok(NULL, " ,()\n");
+
+		if (token[0] == 'R') {
+			strcat(newLine, "0");
+			for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
+			token[strlen(token)-1] = '\0';
+			strcat(newLine, dec2bin(atoi(token), 16));
+		} else if (token[0] == '#') {
+			strcat(newLine, "1");
+			if (token[1] == 'h') {
+				for (int i = 2; i < strlen(token); i++) token[i-2] = token[i];
+				token[strlen(token)-2] = '\0';
+				strcat(newLine, dec2bin(hex2dec(token), 16));
+			} else {
+				for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
+				token[strlen(token)-1] = '\0';
+				strcat(newLine, dec2bin(atoi(token), 16));
+			}
+		}
+
 	} else if (lineType == 3) {
+
+		token = strtok(NULL, " ,()\n");
+		for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
+		token[strlen(token)-1] = '\0';
+		strcat(newLine, dec2bin(atoi(token),5));
+		char tmp[T_MAX] = "";
+		token = strtok(NULL, " ,()\n");
+		strcpy(tmp,token);
+		token = strtok(NULL, " ,()\n");
+		for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
+		token[strlen(token)-1] = '\0';
+		strcat(newLine, dec2bin(atoi(token), 5));
+
+		if (tmp[0] == 'R') {
+			strcat(newLine, "0");
+			for (int i = 1; i < strlen(tmp); i++) tmp[i-1] = tmp[i];
+			token[strlen(token)-1] = '\0';
+			strcat(newLine, dec2bin(atoi(tmp), 16));
+		} else if (tmp[0] == '#') {
+			strcat(newLine, "1");
+			if (tmp[1] == 'h') {
+				for (int i = 2; i < strlen(tmp); i++) tmp[i-2] = tmp[i];
+				tmp[strlen(tmp)-2] = '\0';
+				strcat(newLine, dec2bin(hex2dec(tmp), 16));
+			} else {
+				for (int i = 1; i < strlen(tmp); i++) tmp[i-1] = tmp[i];
+				tmp[strlen(tmp)-1] = '\0';
+				strcat(newLine, dec2bin(atoi(tmp), 16));
+			}
+		}
+
+	} else if (lineType == 4) {
 		strcat(newLine, "0000000000");
 		token = strtok(NULL, " ,\n");
 		if (token[0] == 'R') {
@@ -267,13 +324,13 @@ void translateLine (char line[T_MAX]) {
 				strcat(newLine, dec2bin(atoi(token), 16));
 			}
 		}
-	} else if (lineType == 4) {
+	} else if (lineType == 5) {
 		token = strtok(NULL, " ,\n");
 		for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
 		token[strlen(token)-1] = '\0';
 		strcat(newLine, dec2bin(atoi(token), 5));
 		strcat(newLine, "0000000000000000000000");
-	} else if (lineType == 5) {
+	} else if (lineType == 6) {
 		strcat(newLine, "000000000000000000000000000");
 	}
 
@@ -304,7 +361,7 @@ void translateFile () {
 	 */
 
 	file = fopen("fileWithoutLabels.txt", "r");
-	newFile = fopen("hexFile.txt", "w");
+	newFile = fopen("binFile.txt", "w");
 
 	while ((read = getline(&line, &len, file)) != -1) {
 		translateLine(line);
@@ -322,7 +379,7 @@ void translateFile () {
 
 /****** MAIN ******/
 
-int main(void) {
-	translateFile();
-	return 0;
-}
+//int main(void) {
+	//translateFile();
+	//return 0;
+//}
