@@ -361,10 +361,3 @@ void translateFile () {
 	fclose(newFile);
 
 }
-
-/****** MAIN ******/
-
-//int main(void) {
-	//translateFile();
-	//return 0;
-//}

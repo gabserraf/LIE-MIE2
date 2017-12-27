@@ -5,20 +5,6 @@
 #include "liste.h"
 
 /*
- * DECLARATIONS
- */
-
-int detectErrorHexaFromChar (char p);
-int detectErrorHexaFromLine (char token[T_MAX]);
-int detectErrorDecFromChar (char p);
-int detectErrorDecFromLine (char token[T_MAX]);
-int detectErrorFromRegister (char token[T_MAX]);
-int detectLabelErrorFromLine (char line[T_MAX]);
-int detectSyntaxErrorFromLine (char line[T_MAX]);
-void detectLabelErrorFromFile (char filename[T_MAX], int* n);
-int command2lineType (char* command);
-
-/*
  * FUNCS
  */
 
@@ -28,61 +14,88 @@ int command2lineType (char* command);
  * @return 1 s'il y a une erreur, 0 sinon
  */
 int detectErrorHexaFromChar (char p) {
+	
 	for (int i = 0; i < 10; i++) {
 		char c = i + '0';
 		if (p == c) return 0;
 	}
+
 	if (p == 'a' || p == 'A' || p == 'b' || p == 'B' || p == 'c' || p == 'C' || p == 'd' || p == 'D' || p == 'e' || p == 'E' || p == 'f' || p == 'F')
 		return 0;
+
 	return 1;
+
 }
 
 int detectErrorHexaFromLine (char token[T_MAX]) {
+	
 	for (int i = 2; i < strlen(token); i++) token[i-2] = token[i];
 	token[strlen(token)-2] = '\0';
+
 	if (strlen(token) > 4) return 1;
+
 	if (strlen(token) == 0) return 1;
+
 	for (int i = 0; i < strlen(token); i++) {
 		if (detectErrorHexaFromChar(token[i])) return 1;
 	}
+
 	return 0;
+
 }
 
 int detectErrorDecFromChar (char p) {
+	
 	for (int i = 0; i < 10; i++) {
 		char c = i + '0';
 		if (p == c) return 0;
 	}
+
 	return 1;
+
 }
 
 int detectErrorDecFromLine (char token[T_MAX]) {
+	
 	for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
 	token[strlen(token)-1] = '\0';
+
 	if (strlen(token) == 0) return 1;
+
 	for (int i = 0; i < strlen(token); i++) {
 		if (detectErrorDecFromChar(token[i])) return 1;
 	}
+
 	return atoi(token) > 65535;
+
 }
 
 int detectErrorFromRegister (char token[T_MAX]) {
+	
 	if (token[0] != 'R') return 1;
+	
 	if (strlen(token) < 2) return 1;
+
 	for (int i = 0; i < strlen(token); i++) token[i-1] = token[i];
 	token[strlen(token)-1] = '\0';
+
 	for (int i = 0; i < 32; i++) {
 		char s[3];
 		sprintf(s, "%d", i);
 		if (strcmp(token, s) == 0) return 0;
 	}
+
 	return 1;
+
 }
 
 int detectLabelErrorFromLine (char line[T_MAX]) {
+	
 	char label[T_MAX] = "";
 	extractlabel(line, label);
+	
 	if (strstr(label, " ")) return 1;
+	
 	return 0;
 }
 
@@ -124,7 +137,7 @@ void detectLabelErrorFromFile (char filename[T_MAX], int* n) {
 
 	int i = 0;
 	while (strcmp(listIndex[i], "\0") != 0) {
-		printf("%s\n",listIndex[i]);
+		printf("%s\n", listIndex[i]);
 		i++;
 	}
 

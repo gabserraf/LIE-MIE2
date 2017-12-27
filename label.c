@@ -45,7 +45,6 @@ int nbLinesPerFile (char filename[T_MAX]) {
 
 }
 
-
 void extractlabel (char line[T_MAX], char label[T_MAX]) {
 	
 	if (strstr(line, ":")) {

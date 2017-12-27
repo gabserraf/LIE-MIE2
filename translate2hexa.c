@@ -78,10 +78,3 @@ void translateFileBin2Hexa () {
 	fclose(newFile);
 
 }
-
-/****** MAIN ******/
-
-int main(void) {
-	TranslateFileBin2Hexa("binFile.txt");
-	return 0;
-}
