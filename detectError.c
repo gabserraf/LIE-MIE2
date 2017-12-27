@@ -275,8 +275,10 @@ int detectSyntaxErrorFromLine (char line[T_MAX]) {
 			if (strlen(token) < 2) return 1;
 			if (token[1] == 'h') {
 				if (detectErrorHexaFromLine(token)) return 1; 
+				else return 0;
 			} else {
 				if (detectErrorDecFromLine(token)) return 1;
+				else return 0;
 			}
 		} else {
 			return 1;
@@ -319,7 +321,7 @@ int detectSyntaxErrorFromLine (char line[T_MAX]) {
 /******** MAIN ********/
 
 int main(void) {
-	char p[T_MAX] = "JMP #h22\0";
+	char p[T_MAX] = "JMP #22\0";
 	//char token[T_MAX] = "#h2\0";
 	//printf("%d\n", detectErrorHexaFromLine(token));
 	printf("%d", detectSyntaxErrorFromLine(p));
