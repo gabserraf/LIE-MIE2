@@ -108,14 +108,17 @@ void removeLabelFromLine (char line[T_MAX]) {
 		}
 		i++;
 	}
+
 	while (line[i] == ' ') {
 		i++;
 	}
+
 	while (line[i] != '\0') {
 		newLine[j] = line[i];
 		j++;
 		i++;
 	}
+
 	newLine[j] = '\0';
 
 	/*
@@ -170,7 +173,7 @@ void removeLabelsFromFile () {
 	file = fopen("proprifiedFile.txt", "r");	
 
 	while ((read = getline(&line, &len, file)) != -1) {
-		
+
 		removeLabelFromLine(line);
 		
 		labelAdress = -1;
@@ -207,9 +210,11 @@ void removeLabelsFromFile () {
 
 /****** MAIN ******/
 
-
+/* 
+*
 int main(void) {
 	proprifyFile("testFile.txt");
 	removeLabelsFromFile();
 	return 0;
 }
+*/

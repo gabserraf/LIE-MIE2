@@ -20,18 +20,6 @@
  * DECLARATIONS
  */
 
-/* detectError */
-
-int detectErrorHexaFromChar (char p);
-int detectErrorHexaFromLine (char token[T_MAX]);
-int detectErrorDecFromChar (char p);
-int detectErrorDecFromLine (char token[T_MAX]);
-int detectErrorFromRegister (char token[T_MAX]);
-int detectLabelErrorFromLine (char line[T_MAX]);
-int detectSyntaxErrorFromLine (char line[T_MAX]);
-void detectLabelErrorFromFile (char filename[T_MAX], int* n);
-int command2lineType (char* command);
-
 /* proprifyFile */
 
 int proprifyTokenWithComma (char * token, char newLine[T_MAX]);
@@ -50,6 +38,18 @@ void extractlabel (char line[T_MAX], char label[T_MAX]);
 void changeLabelFromLine (char line[T_MAX], int labelAdress);
 void removeLabelFromLine (char line[T_MAX]);
 void removeLabelsFromFile ();
+
+/* detectError */
+
+int detectErrorHexaFromChar (char p);
+int detectErrorHexaFromLine (char token[T_MAX]);
+int detectErrorDecFromChar (char p);
+int detectErrorDecFromLine (char token[T_MAX]);
+int detectErrorFromRegister (char token[T_MAX]);
+int detectLabelErrorFromLine (char line[T_MAX]);
+int detectSyntaxErrorFromLine (char line[T_MAX]);
+void detectLabelErrorFromFile (char filename[T_MAX], int* n);
+int command2lineType (char* command);
 
 /* translate2binary */
 

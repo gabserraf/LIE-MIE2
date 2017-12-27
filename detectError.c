@@ -15,12 +15,9 @@
  */
 int detectErrorHexaFromChar (char p) {
 	
-	for (int i = 0; i < 10; i++) {
-		char c = i + '0';
-		if (p == c) return 0;
-	}
+	if (detectErrorDecFromChar(p) == 0) return 0;
 
-	if (p == 'a' || p == 'A' || p == 'b' || p == 'B' || p == 'c' || p == 'C' || p == 'd' || p == 'D' || p == 'e' || p == 'E' || p == 'f' || p == 'F')
+	else if (p == 'a' || p == 'A' || p == 'b' || p == 'B' || p == 'c' || p == 'C' || p == 'd' || p == 'D' || p == 'e' || p == 'E' || p == 'f' || p == 'F')
 		return 0;
 
 	return 1;
@@ -29,6 +26,7 @@ int detectErrorHexaFromChar (char p) {
 
 int detectErrorHexaFromLine (char token[T_MAX]) {
 	
+
 	for (int i = 2; i < strlen(token); i++) token[i-2] = token[i];
 	token[strlen(token)-2] = '\0';
 
@@ -177,6 +175,38 @@ void detectLabelErrorFromFile (char filename[T_MAX], int* n) {
 }
 */
 
+
+int command2lineType (char* command) {
+	if (strcmp(command, "OR") == 0) return 1;
+	else if (strcmp(command, "XOR") == 0) return 1;
+	else if (strcmp(command, "AND") == 0) return 1;
+	else if (strcmp(command, "ADD") == 0) return 1;
+	else if (strcmp(command, "SUB") == 0) return 1;
+	else if (strcmp(command, "MUL") == 0) return 1;
+	else if (strcmp(command, "DIV") == 0) return 1;
+	else if (strcmp(command, "SHR") == 0) return 1;
+	else if (strcmp(command, "LDB") == 0) return 2;
+	else if (strcmp(command, "LDH") == 0) return 2;
+	else if (strcmp(command, "LDW") == 0) return 2;
+	else if (strcmp(command, "STB") == 0) return 3;
+	else if (strcmp(command, "STH") == 0) return 3;
+	else if (strcmp(command, "STW") == 0) return 3;
+	else if (strcmp(command, "JMP") == 0) return 4;
+	else if (strcmp(command, "JZS") == 0) return 4;
+	else if (strcmp(command, "JZC") == 0) return 4;
+	else if (strcmp(command, "JCS") == 0) return 4;
+	else if (strcmp(command, "JCC") == 0) return 4;
+	else if (strcmp(command, "JNS") == 0) return 4;
+	else if (strcmp(command, "JNC") == 0) return 4;
+	else if (strcmp(command, "IN") == 0) return 5;
+	else if (strcmp(command, "OUT") == 0) return 5;
+	else if (strcmp(command, "RND") == 0) return 1;
+	else if (strcmp(command, "HLT") == 0) return 6;
+	else return 0;
+}
+
+
+
 int detectSyntaxErrorFromLine (char line[T_MAX]) {	
 	
 	/*
@@ -244,7 +274,7 @@ int detectSyntaxErrorFromLine (char line[T_MAX]) {
 		} else if (token[0] == '#') {
 			if (strlen(token) < 2) return 1;
 			if (token[1] == 'h') {
-				if (detectErrorHexaFromLine(token)) return 1;
+				if (detectErrorHexaFromLine(token)) return 1; 
 			} else {
 				if (detectErrorDecFromLine(token)) return 1;
 			}
@@ -285,39 +315,13 @@ int detectSyntaxErrorFromLine (char line[T_MAX]) {
 
 }
 
-int command2lineType (char* command) {
-	if (strcmp(command, "OR") == 0) return 1;
-	else if (strcmp(command, "XOR") == 0) return 1;
-	else if (strcmp(command, "AND") == 0) return 1;
-	else if (strcmp(command, "ADD") == 0) return 1;
-	else if (strcmp(command, "SUB") == 0) return 1;
-	else if (strcmp(command, "MUL") == 0) return 1;
-	else if (strcmp(command, "DIV") == 0) return 1;
-	else if (strcmp(command, "SHR") == 0) return 1;
-	else if (strcmp(command, "LDB") == 0) return 2;
-	else if (strcmp(command, "LDH") == 0) return 2;
-	else if (strcmp(command, "LDW") == 0) return 2;
-	else if (strcmp(command, "STB") == 0) return 3;
-	else if (strcmp(command, "STH") == 0) return 3;
-	else if (strcmp(command, "STW") == 0) return 3;
-	else if (strcmp(command, "JMP") == 0) return 4;
-	else if (strcmp(command, "JZS") == 0) return 4;
-	else if (strcmp(command, "JZC") == 0) return 4;
-	else if (strcmp(command, "JCS") == 0) return 4;
-	else if (strcmp(command, "JCC") == 0) return 4;
-	else if (strcmp(command, "JNS") == 0) return 4;
-	else if (strcmp(command, "JNC") == 0) return 4;
-	else if (strcmp(command, "IN") == 0) return 5;
-	else if (strcmp(command, "OUT") == 0) return 5;
-	else if (strcmp(command, "RND") == 0) return 1;
-	else if (strcmp(command, "HLT") == 0) return 6;
-	else return 0;
-}
 
 /******** MAIN ********/
 
 int main(void) {
-	char p[T_MAX] = "JMP #h\0";
-	printf("%d\n", detectSyntaxErrorFromLine(p));
+	char p[T_MAX] = "JMP #h22\0";
+	//char token[T_MAX] = "#h2\0";
+	//printf("%d\n", detectErrorHexaFromLine(token));
+	printf("%d", detectSyntaxErrorFromLine(p));
 	return 0;
 }

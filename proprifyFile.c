@@ -113,7 +113,13 @@ int proprifyTokenWithOpen (char * token, char newLine[T_MAX]) {
 
 int proprifyTokenWithClose (char * token, char newLine[T_MAX]) {
 
-	if (token[0] == ')' && strlen(token) > 1) {
+
+	if (strcmp(token, ")") == 0) {
+
+		newLine[strlen(newLine)-1] = ')';
+		return 1;
+
+	} else if (token[0] == ')' && strlen(token) > 1) {
 
 		newLine[strlen(newLine)-1] = ')';
 
@@ -144,16 +150,16 @@ void proprifyLineWithComma (char line[T_MAX]) {
 	 * code
 	 */
 
-	token = strtok(line, " \t");
+	token = strtok(line, " \t\r\n");
 
 	while (token != NULL) {
 
 		if (strstr(token, ",")) {
-			if (proprifyTokenWithComma(token, newLine)) token = strtok(NULL, " \t");;
+			if (proprifyTokenWithComma(token, newLine)) token = strtok(NULL, " \t\r\n");;
 		} else {
 			strcat(newLine, token);
 			strcat(newLine, " ");
-			token = strtok(NULL, " \t");
+			token = strtok(NULL, " \t\r\n");
 		}
 
 	}
@@ -180,16 +186,16 @@ void proprifyLineWithOpen (char line[T_MAX]) {
 	 * code
 	 */
 
-	token = strtok(line, " \t");
+	token = strtok(line, " \t\r\n");
 
 	while (token != NULL) {
 
 		if (strstr(token, "(")) {
-			if (proprifyTokenWithOpen(token, newLine)) token = strtok(NULL, " \t");;
+			if (proprifyTokenWithOpen(token, newLine)) token = strtok(NULL, " \t\r\n");;
 		} else {
 			strcat(newLine, token);
 			strcat(newLine, " ");
-			token = strtok(NULL, " \t");
+			token = strtok(NULL, " \t\r\n");
 		}
 
 	}
@@ -216,16 +222,16 @@ void proprifyLineWithClose (char line[T_MAX]) {
 	 * code
 	 */
 
-	token = strtok(line, " \t");
+	token = strtok(line, " \t\r\n");
 
 	while (token != NULL) {
 
 		if (strstr(token, ")")) {
-			if (proprifyTokenWithClose(token, newLine)) token = strtok(NULL, " \t");;
+			if (proprifyTokenWithClose(token, newLine)) token = strtok(NULL, " \t\r\n");
 		} else {
 			strcat(newLine, token);
 			strcat(newLine, " ");
-			token = strtok(NULL, " \t");
+			token = strtok(NULL, " \t\r\n");
 		}
 
 	}
@@ -244,9 +250,8 @@ void proprifyLine (char line[T_MAX]) {
 	proprifyLineWithOpen(line);
 	proprifyLineWithClose(line);
 	proprifyLineWithComma(line);
-
+	strcat(line, "\n");
 }
-
 
 void proprifyFile (char filename[T_MAX]) {
 
@@ -254,11 +259,11 @@ void proprifyFile (char filename[T_MAX]) {
 	 * variables
 	 */
 
-	FILE * file;
-	FILE * newFile;
+	FILE * file = NULL;
+	FILE * newFile = NULL;
 	char * line = NULL;
 	size_t len = 0;
-	ssize_t read;
+	ssize_t read = 0;
 
 	/*
 	 * code
