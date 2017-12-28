@@ -1,7 +1,6 @@
-ici:IN R1
-                 JZS fin
-     STB (R32)   #20, R1
-     LDB R1,( R5  )#1
-     SUB Rd,Rn, S
-  fin:    JMP ici 
-		   HLT
+ici:	IN R1
+		JZS fin
+		SUB R1, R0, R1
+		OUT R1
+		JMP ic
+fin:    HLT
