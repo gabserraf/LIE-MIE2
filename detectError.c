@@ -321,7 +321,7 @@ int detectSyntaxErrorFromLine (char line[T_MAX]) {
 /******** MAIN ********/
 
 int main(void) {
-	char p[T_MAX] = "JMP #22\0";
+	char p[T_MAX] = "JMP #22  23\0";
 	//char token[T_MAX] = "#h2\0";
 	//printf("%d\n", detectErrorHexaFromLine(token));
 	printf("%d", detectSyntaxErrorFromLine(p));
