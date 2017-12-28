@@ -1,7 +1,0 @@
-IN R1 
-JZS #20
-STB (R32)#20, R1 
-LDB R1, (R5)#1 
-SUB Rd, Rn, S 
-JMP #0
-HLT 

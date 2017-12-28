@@ -8,43 +8,9 @@
  * FUNCS
  */
 
-int nbLinesPerFile (char filename[T_MAX]) {
-
-	/*
-	 * variables
-	 */
-
-	FILE * file;
-	char * line = NULL;
-	int lineCounter = 0;
-	size_t len = 0;
-	ssize_t read;
-
-	/*
-	 * code
-	 */
-
-	file = fopen(filename, "r");
-	if (file == NULL) {
-		printf("FAILURE");
-		return 0;
-	}
-
-	while ((read = getline(&line, &len, file)) != -1) {
-		lineCounter++;
-	}
-
-	/*
-	 * end & return
-	 */
-
-	fclose(file);
-	if (line) free(line);
-
-	return lineCounter;
-
-}
-
+/** 
+ * TODO (comment)
+ */
 void extractlabel (char line[T_MAX], char label[T_MAX]) {
 	
 	if (strstr(line, ":")) {
@@ -58,6 +24,9 @@ void extractlabel (char line[T_MAX], char label[T_MAX]) {
 
 }
 
+/** 
+ * TODO (comment)
+ */
 void changeLabelFromLine (char line[T_MAX], int labelAdress) {
 
 	/*
@@ -73,7 +42,7 @@ void changeLabelFromLine (char line[T_MAX], int labelAdress) {
 	 * code
 	 */
 
-	token = strtok(line, " ");
+	token = strtok(line, " \r\n");
 	sprintf(strLabelAdr, "%d", labelAdress);
 	strcat(adresse, strLabelAdr);
 	strcat(adresse, "\n");
@@ -88,47 +57,43 @@ void changeLabelFromLine (char line[T_MAX], int labelAdress) {
 
 }
 
+/** 
+ * TODO (comment)
+ */
 void removeLabelFromLine (char line[T_MAX]) {
 	
 	/*
 	 * variables
 	 */
 
-	int i = 0;
-	int j = 0;
-	char newLine[T_MAX];
+	int counter = 0;
 
 	/*
 	 * code
 	 */
 
 	if (strstr(line, ":")) {
-		while (line[i] != ':') {
-			i++;
+		while (line[counter] != ':') {
+			counter++;
 		}
-		i++;
+		counter++;
 	}
 
-	while (line[i] == ' ') {
-		i++;
+	while (line[counter] == ' ') {
+		counter++;
 	}
-
-	while (line[i] != '\0') {
-		newLine[j] = line[i];
-		j++;
-		i++;
-	}
-
-	newLine[j] = '\0';
 
 	/*
-	 * code
+	 * end
 	 */
 
-	strcpy(line, newLine);
+	shift(line, counter);
 
 }
 
+/** 
+ * TODO (comment)
+ */
 void removeLabelsFromFile () {
 
 	/*
@@ -137,23 +102,25 @@ void removeLabelsFromFile () {
 
 	FILE * file;
 	FILE * newFile;
+	char * token = NULL;
 	char * line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	int lineCounter = 0;
 	char listIndex[nbLinesPerFile("proprifiedFile.txt")][T_MAX];
 	char label[T_MAX];
-	char * token = NULL;
+	char copyLine[T_MAX];
+	int lineCounter = 0;
 	int labelAdress;
+	size_t len = 0;
+	ssize_t read;
 
 	/*
 	 * store labels
 	 */
 
 	file = fopen("proprifiedFile.txt", "r");
+
 	if (file == NULL) {
-		printf("FAILURE");
-		return ;
+		printf("FAILURE: File doesn't exist (proprifiedFile.txt)");
+		exit(0);
 	}
 
 	while ((read = getline(&line, &len, file)) != -1) {
@@ -170,33 +137,33 @@ void removeLabelsFromFile () {
 	 */
 
 	newFile = fopen("fileWithoutLabels.txt", "w");
-	file = fopen("proprifiedFile.txt", "r");	
+	file = fopen("proprifiedFile.txt", "r");
 
 	while ((read = getline(&line, &len, file)) != -1) {
 
 		removeLabelFromLine(line);
-		
+
+		strcpy(copyLine, line);
+
 		labelAdress = -1;
 		
 		if (line[0] == 'J') {
 
-			token = strtok(line, " \n");
-			token = strtok(NULL, " \n");
+			token = strtok(line, " \r\n");
+			token = strtok(NULL, " \r\n");
 
 			for (int i = 0; i < lineCounter; i++) {
 				if (strcmp(listIndex[i], token) == 0) labelAdress = 4*i;
 			}
 
-			if (labelAdress != -1) {
-				changeLabelFromLine(line, labelAdress);
-			}
+			if (labelAdress != -1) changeLabelFromLine(line, labelAdress);
 
 		}
 
-		fputs(line, newFile);
+		if (labelAdress != -1) fputs(line, newFile);
+		else fputs(copyLine, newFile);
 
 	}
-	
 
 	/*
 	 * end
@@ -207,14 +174,3 @@ void removeLabelsFromFile () {
 	fclose(file);
 
 }
-
-/****** MAIN ******/
-
-/* 
-*
-int main(void) {
-	proprifyFile("testFile.txt");
-	removeLabelsFromFile();
-	return 0;
-}
-*/

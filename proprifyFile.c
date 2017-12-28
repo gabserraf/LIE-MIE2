@@ -8,6 +8,9 @@
  * FUNCS
  */
 
+/** 
+ * TODO (comment)
+ */
 int proprifyTokenWithComma (char * token, char newLine[T_MAX]) {
 
 	/*
@@ -33,8 +36,7 @@ int proprifyTokenWithComma (char * token, char newLine[T_MAX]) {
 		newLine[strlen(newLine)-1] = ',';
 		strcat(newLine, " ");
 
-		for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
-		token[strlen(token)-1] = '\0';
+		shift(token, 1);
 
 	} else {
 		
@@ -51,8 +53,7 @@ int proprifyTokenWithComma (char * token, char newLine[T_MAX]) {
 		strcat(newLine, " ");
 
 		if (counter < strlen(token)) {
-			for (int i = counter; i < strlen(token); i++) token[i-counter] = token[i];
-			token[strlen(token)-counter] = '\0';
+			shift(token, counter);
 		} else {
 			return 1;
 		}
@@ -63,6 +64,9 @@ int proprifyTokenWithComma (char * token, char newLine[T_MAX]) {
 
 }
 
+/** 
+ * TODO (comment)
+ */
 int proprifyTokenWithOpen (char * token, char newLine[T_MAX]) {
 
 	/*
@@ -85,8 +89,7 @@ int proprifyTokenWithOpen (char * token, char newLine[T_MAX]) {
 
 		strcat(newLine, "(");
 
-		for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
-		token[strlen(token)-1] = '\0';
+		shift(token, 1);
 
 	} else {
 		
@@ -99,8 +102,7 @@ int proprifyTokenWithOpen (char * token, char newLine[T_MAX]) {
 		strcat(newLine, " ");
 
 		if (counter < strlen(token)) {
-			for (int i = counter; i < strlen(token); i++) token[i-counter] = token[i];
-			token[strlen(token)-counter] = '\0';
+			shift(token, counter);
 		} else {
 			return 1;
 		}
@@ -111,25 +113,55 @@ int proprifyTokenWithOpen (char * token, char newLine[T_MAX]) {
 
 }
 
+/** 
+ * TODO (comment)
+ */
 int proprifyTokenWithClose (char * token, char newLine[T_MAX]) {
 
+	/*
+	 * variables
+	 */
+
+	char midToken[T_MAX] = "";
+	int counter = 0;
+
+	/*
+	 * code
+	 */
 
 	if (strcmp(token, ")") == 0) {
 
 		newLine[strlen(newLine)-1] = ')';
+		strcat(newLine, " ");
+
 		return 1;
 
-	} else if (token[0] == ')' && strlen(token) > 1) {
+	} else if (token[0] == ')') {
 
 		newLine[strlen(newLine)-1] = ')';
+		strcat(newLine, " ");
 
-		for (int i = 1; i < strlen(token); i++) token[i-1] = token[i];
-		token[strlen(token)-1] = '\0';
+		shift(token, 1);
 
 	} else {
 
-		strcat(newLine, token);
-		return 1;
+		while (token[counter] != ')') {
+			midToken[counter] = token[counter];
+			counter++;
+		}
+		
+		midToken[counter] = ')';
+		midToken[counter+1] = '\0';
+		counter++;
+		
+		strcat(newLine, midToken);
+		strcat(newLine, " ");
+
+		if (counter < strlen(token)) {
+			shift(token, counter);
+		} else {
+			return 1;
+		}
 
 	}
 
@@ -137,6 +169,9 @@ int proprifyTokenWithClose (char * token, char newLine[T_MAX]) {
 
 }
 
+/** 
+ * TODO (comment)
+ */
 void proprifyLineWithComma (char line[T_MAX]) {
 
 	/*
@@ -173,6 +208,9 @@ void proprifyLineWithComma (char line[T_MAX]) {
 
 }
 
+/** 
+ * TODO (comment)
+ */
 void proprifyLineWithOpen (char line[T_MAX]) {
 
 	/*
@@ -209,6 +247,9 @@ void proprifyLineWithOpen (char line[T_MAX]) {
 
 }
 
+/** 
+ * TODO (comment)
+ */
 void proprifyLineWithClose (char line[T_MAX]) {
 
 	/*
@@ -245,14 +286,21 @@ void proprifyLineWithClose (char line[T_MAX]) {
 
 }
 
+/** 
+ * TODO (comment)
+ */
 void proprifyLine (char line[T_MAX]) {
 
 	proprifyLineWithOpen(line);
 	proprifyLineWithClose(line);
 	proprifyLineWithComma(line);
 	strcat(line, "\n");
+
 }
 
+/** 
+ * TODO (comment)
+ */
 void proprifyFile (char filename[T_MAX]) {
 
 	/*
@@ -269,8 +317,14 @@ void proprifyFile (char filename[T_MAX]) {
 	 * code
 	 */
 	
+
 	file = fopen(filename, "r");
 	newFile = fopen("proprifiedFile.txt", "w");
+
+	if (file == NULL) {
+		printf("FAILURE: File doesn't exist (%s)", filename);
+		exit(0);
+	}
 
 	while ((read = getline(&line, &len, file)) != -1) {
 		proprifyLine(line);
