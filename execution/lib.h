@@ -1,4 +1,8 @@
-#ifndef LISTE_H2
+#ifndef LIB_H
+
+/*
+ * INCLUDES
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,8 +10,16 @@
 #include <string.h>
 #include <time.h>
 
+/*
+ * DEFINE
+ */
+
 #define R0 0
 #define T_MAX 512
+
+/*
+ * GLOBAL REGISTERS
+ */
 
 int* R1 = NULL;
 int* R2 = NULL;
@@ -42,42 +54,33 @@ int* R29 = NULL;
 int* R30 = NULL;
 int* R31 = NULL;
 
+/*
+ * OTHER REGISTERS
+ */
+
 int* C = NULL;
 int* Z = NULL;
 int* N = NULL;
 int* PC = NULL;
 
-char memory[65536][4];
+char memory[65536][2];
+
+/*
+ * FUNCS
+ */
+
+/* auxiliaries */
 
 void shift(char * token, int number);
-char* bin2hex (char bin[T_MAX]);
-char* hex2bin (char hex[T_MAX]);
-char* dec2bin (int dec, int nbBits, int a2);
-int bin2dec (char bin[T_MAX]);
-int hex2dec (char hex[T_MAX]);
-void readLineFromHexaFile (char line[T_MAX]);
-void ConvertHexaFileToBin (char filename[T_MAX]);
 
+/* execution */
 
+void fillMemoryFromFile(char filename[T_MAX]);
+void extractCommand(char char1, char char2, char command[4]);
+void extractFirstRegister(char char1, char char2, int register);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+ * END
+ */
 
 #endif
-
-
-
-

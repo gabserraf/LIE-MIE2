@@ -1,5 +1,5 @@
-#ifndef LISTE_H
-#define LISTE_H
+#ifndef LIB_H
+#define LIB_H
 
 /*
  * INCLUDES

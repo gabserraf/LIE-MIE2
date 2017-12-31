@@ -2,7 +2,7 @@
  * INCLUDES
  */
 
-#include "liste.h"
+#include "lib.h"
 
 /*
  * FUNCS
@@ -271,7 +271,7 @@ void translateFileBin2Hexa() {
 	 */
 
 	file = fopen("binFile.txt", "r");
-	newFile = fopen("hexaFile.txt", "w");
+	newFile = fopen("../hexaFile.txt", "w");
 
 	if (file == NULL) {
 		printf("FAILURE: File doesn't exist (binFile.txt)");
@@ -325,7 +325,7 @@ void translate(char filename[T_MAX]) {
 
 int main (int argc, char* argv[]) {
 	
-	char filename[T_MAX] = "";
+	char filename[T_MAX] = "../testFile.txt";
 
 	if (argc < 2) {
 		printf("FAILURE: filename is required");
