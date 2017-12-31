@@ -124,10 +124,13 @@ void removeLabelsFromFile () {
 	}
 
 	while ((read = getline(&line, &len, file)) != -1) {
-		label[0] = '\0';
-		extractlabel(line, label);
-		strcpy(listIndex[lineCounter], label);
-		lineCounter++;
+		token = strtok(line, " \t\r\n");
+		if (token != NULL) {
+			label[0] = '\0';
+			extractlabel(line, label);
+			strcpy(listIndex[lineCounter], label);
+			lineCounter++;
+		}
 	}
 
 	fclose(file);
@@ -138,6 +141,8 @@ void removeLabelsFromFile () {
 
 	newFile = fopen("fileWithoutLabels.txt", "w");
 	file = fopen("proprifiedFile.txt", "r");
+
+	token = NULL;
 
 	while ((read = getline(&line, &len, file)) != -1) {
 

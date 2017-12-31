@@ -1,6 +1,14 @@
-ici:	IN R1
-		JZS fin
-		SUB R1, R0, R1
-		OUT R1
-		JMP ic
-fin:    HLT
+ici:IN R1
+
+JZS fin
+
+SUB R1, R0, #-4
+
+OUT R1
+
+JMP ici
+
+fin: HLT
+
+
+

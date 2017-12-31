@@ -26,7 +26,7 @@ void shift (char * token, int number);
 int nbLinesPerFile (char filename[T_MAX]);
 int command2lineType (char* command);
 char* bin2hex (char bin[T_MAX]);
-char* dec2bin (int dec, int nbBits);
+char* dec2bin (int dec, int nbBits, int a2);
 int hex2dec (char hex[T_MAX]);
 
 /* proprifyFile */
@@ -59,11 +59,11 @@ int detectSyntaxErrorFromLine (char line[T_MAX]);
 void detectLabelErrorFromFile (char filename[T_MAX], int* n);
 int detectErrorFromFile ();
 
-/* translate2binary */
+/* translate the file to hexa */
 
 void putSpace (char line[T_MAX]);
 void translateSToken(char newLine[T_MAX], char* token);
-void translateLine (char line[T_MAX]);
+void translateLine2Bin (char line[T_MAX]);
 void translateFile2Bin ();
 void translateFileBin2Hexa ();
 void translate (char filename[T_MAX]);

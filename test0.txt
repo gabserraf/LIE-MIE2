@@ -1,0 +1,11 @@
+IN R3
+IN R5
+ADD R4,R3,R5
+OUT R5
+OUT R3
+OUT R0
+OUT R4
+HLT
+
+
+

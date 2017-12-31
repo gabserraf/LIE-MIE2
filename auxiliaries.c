@@ -63,6 +63,8 @@ int nbLinesPerFile (char filename[T_MAX]) {
  */
 int command2lineType (char* command) {
 
+	if (command == NULL) return 0;
+
 	if (strcmp(command, "OR") == 0) return 1;
 	else if (strcmp(command, "XOR") == 0) return 1;
 	else if (strcmp(command, "AND") == 0) return 1;
@@ -95,6 +97,7 @@ int command2lineType (char* command) {
 /** 
  * TODO (comment)
  */
+
 char* bin2hex (char bin[T_MAX]) {
 
 	/*
@@ -182,17 +185,24 @@ char* hex2bin (char hex[T_MAX]) {
 /** 
  * TODO (comment)
  */
-char* dec2bin (int dec, int nbBits) {
+char* dec2bin (int dec, int nbBits, int a2) {
 
 	/*
 	 * variables
 	 */
 
 	char bin[T_MAX] = "";
+	char * newBin = NULL;
 
 	/*
 	 * code
 	 */
+
+	if (a2 == 0) {
+		newBin = dec2bin (dec, nbBits+1, 1);
+		shift(newBin, 1);
+		return newBin;
+	}
 
 	if (dec >= pow(2, nbBits-1) || dec < -1*pow(2, nbBits-1)) {
 		printf("FAILURE: Could not convert into binary, bits number is insufficient\n");
@@ -284,3 +294,14 @@ int hex2dec (char hex[T_MAX]) {
 	return bin2dec(hex2bin(hex));
 
 }
+
+/*
+int main(void) {
+	int p;
+	char ch[] = "FFFC";
+	p = hex2dec(ch);
+	printf("%d",p);
+	return 0;
+	}
+
+	*/

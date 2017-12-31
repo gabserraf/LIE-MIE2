@@ -37,6 +37,8 @@ int detectErrorHexaFromLine (char token[T_MAX]) {
 
 	if (strlen(token) == 0) return 1;
 
+	if (strlen(token) != 4) return 1;
+
 	for (int i = 0; i < strlen(token); i++) {
 		if (detectErrorHexaFromChar(token[i])) return 1;
 	}
@@ -132,8 +134,11 @@ int detectSyntaxErrorFromLine (char line[T_MAX]) {
 
 	proprifyLine(line);
 
-	token = strtok(line, " \n");
+	token = strtok(line, " \r\n");
+
 	lineType = command2lineType(token);
+
+	if (token == NULL) return 0;
 
 	if (lineType == 0) return 1;
 
