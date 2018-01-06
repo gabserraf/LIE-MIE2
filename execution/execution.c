@@ -59,9 +59,9 @@ void initializeMemory(char filename[T_MAX], char memory[65536][2]) {
 /** 
  * TODO (comment)
  */
-void initializeRegisters(int registres[35]) {
+void initializeRegisters(int registres[36]) {
 
-	for (int i = 0; i < 35; i++) registres[i] = 0;
+	for (int i = 0; i < 36; i++) registres[i] = 0;
 
 }
 
@@ -257,46 +257,308 @@ int extractS(char line[T_MAX]) {
 /** 
  * TODO (comment)
  */
-void display(int registres[35], int PC) {
+void display(int registres[36]) {
 
-	for (int i = 0; i < 35; i++) {
-		if (i <= 31) printf("R%d: %d\n", i, registres[i]);
+	for (int i = 0; i < 36; i++) {
+		if (i <= 31) printf("R%d: %s (%d)\n", i, dec2bin(registres[i], 32, 1), registres[i]);
 		if (i == 32) printf("C: %d\n", registres[i]);
 		if (i == 33) printf("N: %d\n", registres[i]);
 		if (i == 34) printf("Z: %d\n", registres[i]);
+		if (i == 35) printf("PC: %d\n", registres[i]);
 	}
-
-	printf("PC: %d\n", PC);
 
 }
 
 /** 
  * TODO (comment)
  */
-void executeOR(int registres[35], int reg1, int reg2, int imm, int S) {
+void updateRegister(int registres[36], int result, int reg) {
+
+	registres[32] = (result > 2147483647 || result < -2147483648) ? 1 : 0;
+
+	result = (result > 2147483647) ? 2147483647 : result;
+	result = (result < -2147483648) ? -2147483648 : result;
+
+	registres[33] = dec2bin(result, 32, 1)[0] - 48;
+	registres[34] = (result == 0) ? 1 : 0;
+	registres[35] = registres[35] * 4;
+
+	if (reg != 0) {
+		registres[reg] = result;
+	}
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeOR(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+	
+	result = registres[reg2] | S;
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeXOR(int registres[36], int reg1, int reg2, int S) {
 
 	int result = 0;
 
-	if (imm) {
-		result = registres[reg2] | S;
-	} else {
-		result = registres[reg2] | registres[S];
-	}
+	result = registres[reg2] ^ S;
 
-	if (reg1 != 0) {
-		registres[reg1] = result;
-	}
-
-	registres[32] = 0;
-	registres[33] = dec2bin(result, 32, 1)[0] - 48;
-	registres[34] = (result == 0) ? 1 : 0;
+	updateRegister(registres, result, reg1);
 
 }
 
 /** 
  * TODO (comment)
  */
-void execute(char filename[T_MAX], int registres[35], char memory[65536][2]) {
+void executeAND(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = registres[reg2] & S;
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeADD(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = registres[reg2] + S;
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeSUB(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = registres[reg2] - S;
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeMUL(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = bin2dec(shift(dec2bin(registres[reg2], 32, 1), 16)) * bin2dec(shift(dec2bin(S, 32, 1), 16));	
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeDIV(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = registres[reg2] / S;
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeSHR(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+	char* binR = NULL;
+
+	if (S >= 0) result = registres[reg2] >> S;
+	if (S < 0) result = registres[reg2] << S;
+
+	updateRegister(registres, result, reg1);
+
+	binR = dec2bin(registres[reg2], 32, 1);
+	if (S < 0) registres[32] = binR[abs(S)-1] - 48;
+	if (S > 0) registres[32] = binR[32-S] - 48;
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeLDB(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = hex2dec(memory[registres[reg2]+S]);
+
+	updateRegister(registres, result, reg1);
+
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeLDH(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+
+	int result = 0;
+	char mem[4] = "";
+
+	strcat(mem, memory[registres[reg2]+S]);
+	strcat(mem, memory[registres[reg2]+S+1]);
+
+	result = hex2dec(mem);
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeLDW(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+
+	int result = 0;
+	char mem[4] = "";
+
+	strcat(mem, memory[registres[reg2]+S]);
+	strcat(mem, memory[registres[reg2]+S+1]);
+	strcat(mem, memory[registres[reg2]+S+2]);
+	strcat(mem, memory[registres[reg2]+S+3]);
+
+	result = hex2dec(mem);
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeSTB(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = bin2dec(shift(dec2bin(registres[reg2], 32, 1), 24));
+	strcpy(memory[registres[reg1]+S], bin2hex(shift(dec2bin(registres[reg2], 32, 1), 24)));
+
+	updateRegister(registres, result, 0);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeSTH(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+
+	int result = 0;
+	char mem[4] = "";
+
+	result = bin2dec(shift(dec2bin(registres[reg2], 32, 1), 16));
+	strcpy(memory[registres[reg1]+S], bin2hex(shift(dec2bin(registres[reg2], 32, 1), 16)));
+
+	updateRegister(registres, result, 0);
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeSTW(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = registres[reg2];
+	strcpy(memory[registres[reg1]+S], bin2hex(dec2bin(result, 32, 1)));
+
+	updateRegister(registres, result, 0);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeJ(int registres[36], int S, char command[4]) {
+
+	if (strcmp(command, "JMP")) {
+		registres[35] = S;
+	} else if (strcmp(command, "JZS")) {
+		if (registres[34]) registres[35] = S;
+	} else if (strcmp(command, "JZC")) {
+		if (!registres[34]) registres[35] = S;
+	} else if (strcmp(command, "JCS")) {
+		if (registres[32]) registres[35] = S;
+	} else if (strcmp(command, "JCC")) {
+		if (!registres[32]) registres[35] = S;
+	} else if (strcmp(command, "JNS")) {
+		if (registres[33]) registres[35] = S;
+	} else if (strcmp(command, "JNC")) {
+		if (!registres[33]) registres[35] = S;
+	}
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeIN(int registres[36], int reg1) {
+
+	int result = 0;
+
+	printf("Entrez une valeur :\n");
+	scanf("%d", &result);
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeOUT(int registres[36], int reg1) {
+
+	int result = 0;
+
+	result = registres[reg1];
+	printf("%d\n", result);
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeRND(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	result = rand()%(S - registres[reg2]) + registres[reg2]
+
+	updateRegister(registres, result, reg1);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void execute(char filename[T_MAX], int registres[36], char memory[65536][2]) {
 
 	/*
 	 * variables
@@ -308,12 +570,12 @@ void execute(char filename[T_MAX], int registres[35], char memory[65536][2]) {
 	int reg2 = 0;
 	int imm = 0;
 	int S = 0;
-	int PC = 0;
 
 	/*
 	 * execution
 	 */
 
+	srand(time(NULL));
 	initializeMemory(filename, memory);
 	initializeRegisters(registres);
 
@@ -326,13 +588,28 @@ void execute(char filename[T_MAX], int registres[35], char memory[65536][2]) {
 		reg1 = extractFirstRegister(line);
 		reg2 = extractSecondRegister(line);
 		imm = extractImm(line);
-		S = extractS(line);
+		S = imm ? registres[extractS(line)] : extractS(line);
 
-		if (strcmp(command, "OR") == 0) executeOR(registres, reg1, reg2, imm, S);
+		if (strcmp(command, "OR") == 0) executeOR(registres, reg1, reg2, S);
+		if (strcmp(command, "XOR") == 0) executeXOR(registres, reg1, reg2, S);
+		if (strcmp(command, "AND") == 0) executeAND(registres, reg1, reg2, S);
+		if (strcmp(command, "ADD") == 0) executeADD(registres, reg1, reg2, S);
+		if (strcmp(command, "SUB") == 0) executeSUB(registres, reg1, reg2, S);
+		if (strcmp(command, "MUL") == 0) executeMUL(registres, reg1, reg2, S);
+		if (strcmp(command, "DIV") == 0) executeDIV(registres, reg1, reg2, S);
+		if (strcmp(command, "SHR") == 0) executeSHR(registres, reg1, reg2, S);
+		if (strcmp(command, "LDB") == 0) executeLDB(registres, memory, reg1, reg2, S);
+		if (strcmp(command, "LDH") == 0) executeLDH(registres, memory, reg1, reg2, S);
+		if (strcmp(command, "LDW") == 0) executeLDW(registres, memory, reg1, reg2, S);
+		if (strcmp(command, "STB") == 0) executeSTB(registres, memory, reg1, reg2, S);
+		if (strcmp(command, "STH") == 0) executeSTH(registres, memory, reg1, reg2, S);
+		if (strcmp(command, "STW") == 0) executeSTW(registres, memory, reg1, reg2, S);
+		if (command[0] == 'J') executeJ(registres, S, command);
+		if (strcmp(command, "IN") == 0) executeIN(registres, reg1);
+		if (strcmp(command, "OUT") == 0) executeOUT(registres, reg1);
+		if (strcmp(command, "RND") == 0) executeRND(registres, reg1, reg2, S);
 
-		if (command[0] != 'J') PC += 4;
-
-		display(registres, PC);
+		display(registres);
 
 	}
 
@@ -353,5 +630,5 @@ int main (int argc, char* argv[]) {
 	execute(filename, registres, memory);
 
 	return 0;
-	
+
 }

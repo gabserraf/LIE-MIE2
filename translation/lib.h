@@ -26,6 +26,7 @@ void shift (char * token, int number);
 int nbLinesPerFile (char filename[T_MAX]);
 int command2lineType (char* command);
 char* bin2hex (char bin[T_MAX]);
+char* hex2bin (char hex[T_MAX]);
 char* dec2bin (int dec, int nbBits, int a2);
 int hex2dec (char hex[T_MAX]);
 

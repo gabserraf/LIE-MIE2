@@ -20,7 +20,7 @@
  * REGISTERS
  */
 
-int registres[35];
+int registres[36];
 
 /*
  * MEMORY
@@ -36,21 +36,38 @@ char memory[65536][2];
 
 void shift (char * token, int number);
 char* bin2hex (char bin[T_MAX]);
+char* hex2bin (char hex[T_MAX]);
 char* dec2bin (int dec, int nbBits, int a2);
 int hex2dec (char hex[T_MAX]);
 
 /* execution */
 
 void initializeMemory(char filename[T_MAX], char memory[65536][2]);
-void initializeRegisters(int registres[35]);
+void initializeRegisters(int registres[36]);
 void extractCommand(char line[T_MAX], char command[4]);
 int extractFirstRegister(char line[T_MAX]);
 int extractSecondRegister(char line[T_MAX]);
 int extractImm(char line[T_MAX]);
 int extractS(char line[T_MAX]);
-void display(int registres[35], int PC);
-void executeOR(int registres[35], int reg1, int reg2, int imm, int S);
-void execute(char filename[T_MAX], int registres[35], char memory[65536][2]);
+void display(int registres[36]);
+void executeOR(int registres[36], int reg1, int reg2, int imm, int S);
+void executeXOR(int registres[36], int reg1, int reg2, int imm, int S);
+void executeAND(int registres[36], int reg1, int reg2, int imm, int S);
+void executeADD(int registres[36], int reg1, int reg2, int imm, int S);
+void executeSUB(int registres[36], int reg1, int reg2, int imm, int S);
+void executeMUL(int registres[36], int reg1, int reg2, int imm, int S);
+void executeDIV(int registres[36], int reg1, int reg2, int imm, int S);
+void executeSHR(int registres[36], int reg1, int reg2, int imm, int S);
+void executeLDB(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
+void executeLDH(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
+void executeLDW(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
+void executeSTB(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
+void executeSTH(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
+void executeSTW(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
+void executeIN(int registres[36], int reg1);
+void executeOUT(int registres[36], int reg1);
+void executeRND(int registres[36], int reg1, int reg2, int S);
+void execute(char filename[T_MAX], int registres[36], char memory[65536][2]);
 
 /*
  * END
