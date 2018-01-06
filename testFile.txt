@@ -1,2 +1,6 @@
-OR R1, R2, R3
-HLT
+ici:    IN R1
+JZS fin
+SUB R1  ,R0 , R1
+OUT R1
+JMP ici
+fin: HLT
