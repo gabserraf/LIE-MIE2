@@ -97,7 +97,6 @@ int command2lineType (char* command) {
 /** 
  * TODO (comment)
  */
-
 char* bin2hex (char bin[T_MAX]) {
 
 	/*
@@ -294,14 +293,3 @@ int hex2dec (char hex[T_MAX]) {
 	return bin2dec(hex2bin(hex));
 
 }
-
-/*
-int main(void) {
-	int p;
-	char ch[] = "FFFC";
-	p = hex2dec(ch);
-	printf("%d",p);
-	return 0;
-	}
-
-	*/

@@ -1,14 +1,2 @@
-ici:IN R1
-
-JZS fin
-
-SUB R1, R0, #-4
-
-OUT R1
-
-JMP ici
-
-fin: HLT
-
-
-
+OR R1, R2, R3
+HLT

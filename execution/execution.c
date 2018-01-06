@@ -8,7 +8,12 @@
  * FUNCS
  */
 
-void fillMemoryFromFile(char filename[T_MAX]) {
+/********** INIT **********/
+
+/** 
+ * TODO (comment)
+ */
+void initializeMemory(char filename[T_MAX], char memory[65536][2]) {
 
 	/*
 	* variables
@@ -35,19 +40,40 @@ void fillMemoryFromFile(char filename[T_MAX]) {
 	while ((read = getline(&line, &len, file)) != -1) {
 
 		token = strtok(line, " \r\n");
-
-		while (token != NULL) {
+		for (int i = 0; i < 4; i++) {
 			strcpy(memory[numberLine], token);
-			token(NULL, " \r\n");
+			token = strtok(NULL, " \r\n");
+			numberLine++;
 		}
-
-		numberLine++;
 
 	}
 
+	/*
+	 * end
+	 */
+
+	fclose(file);
+
 }
 
-void extractCommand(char char1, char char2, char command[4]) {
+/** 
+ * TODO (comment)
+ */
+void initializeRegisters(int registres[35]) {
+
+	for (int i = 0; i < 35; i++) registres[i] = 0;
+
+}
+
+/********** EXTRACT **********/
+
+/** 
+ * TODO (comment)
+ */
+void extractCommand(char line[T_MAX], char command[4]) {
+
+	char char1 = line[0];
+	char char2 = line[1];
 
 	if (char2 == '0' || char2 == '1' || char2 == '2' || char2 == '3' || char2 == '4' || char2 == '5' || char2 == '6' || char2 == '7') {
 
@@ -82,56 +108,250 @@ void extractCommand(char char1, char char2, char command[4]) {
 
 	}
 
-	command[strlen(command)-1] = '\0';
+	command[strlen(command)] = '\0';
 
 }
 
-void extractFirstRegister(char char1, char char2, int* reg) {
+/** 
+ * TODO (comment)
+ */
+int extractFirstRegister(char line[T_MAX]) {
+
+	char char1 = line[1];
+	char char2 = line[2];
 
 	if (char2 == '0' || char2 == '1' || char2 == '2' || char2 == '3') {
 
-		if (char1 == '0' || char1 == '8') reg = R0;
-		if (char1 == '1' || char1 == '9') reg = R4;
-		if (char1 == '2' || char1 == 'A') reg = R8;
-		if (char1 == '3' || char1 == 'B') reg = R12;
-		if (char1 == '4' || char1 == 'C') reg = R16;
-		if (char1 == '5' || char1 == 'D') reg = R20;
-		if (char1 == '6' || char1 == 'E') reg = R24;
-		if (char1 == '7' || char1 == 'F') reg = R28;
+		if (char1 == '0' || char1 == '8') return 0;
+		if (char1 == '1' || char1 == '9') return 4;
+		if (char1 == '2' || char1 == 'A') return 8;
+		if (char1 == '3' || char1 == 'B') return 12;
+		if (char1 == '4' || char1 == 'C') return 16;
+		if (char1 == '5' || char1 == 'D') return 20;
+		if (char1 == '6' || char1 == 'E') return 24;
+		if (char1 == '7' || char1 == 'F') return 28;
 
 	} else if (char2 == '4' || char2 == '5' || char2 == '6' || char2 == '7') {
 
-		if (char1 == '0' || char1 == '8') reg = R1;
-		if (char1 == '1' || char1 == '9') reg = R5;
-		if (char1 == '2' || char1 == 'A') reg = R9;
-		if (char1 == '3' || char1 == 'B') reg = R13;
-		if (char1 == '4' || char1 == 'C') reg = R17;
-		if (char1 == '5' || char1 == 'D') reg = R21;
-		if (char1 == '6' || char1 == 'E') reg = R25;
-		if (char1 == '7' || char1 == 'F') reg = R29;
+		if (char1 == '0' || char1 == '8') return 1;
+		if (char1 == '1' || char1 == '9') return 5;
+		if (char1 == '2' || char1 == 'A') return 9;
+		if (char1 == '3' || char1 == 'B') return 13;
+		if (char1 == '4' || char1 == 'C') return 17;
+		if (char1 == '5' || char1 == 'D') return 21;
+		if (char1 == '6' || char1 == 'E') return 25;
+		if (char1 == '7' || char1 == 'F') return 29;
 
 	} else if (char2 == '8' || char2 == '9' || char2 == 'A' || char2 == 'B') {
 
-		if (char1 == '0' || char1 == '8') reg = R2;
-		if (char1 == '1' || char1 == '9') reg = R6;
-		if (char1 == '2' || char1 == 'A') reg = R10;
-		if (char1 == '3' || char1 == 'B') reg = R14;
-		if (char1 == '4' || char1 == 'C') reg = R18;
-		if (char1 == '5' || char1 == 'D') reg = R22;
-		if (char1 == '6' || char1 == 'E') reg = R26;
-		if (char1 == '7' || char1 == 'F') reg = R30;
+		if (char1 == '0' || char1 == '8') return 2;
+		if (char1 == '1' || char1 == '9') return 6;
+		if (char1 == '2' || char1 == 'A') return 10;
+		if (char1 == '3' || char1 == 'B') return 14;
+		if (char1 == '4' || char1 == 'C') return 18;
+		if (char1 == '5' || char1 == 'D') return 22;
+		if (char1 == '6' || char1 == 'E') return 26;
+		if (char1 == '7' || char1 == 'F') return 30;
 
 	} else {
 
-		if (char1 == '0' || char1 == '8') reg = R3;
-		if (char1 == '1' || char1 == '9') reg = R7;
-		if (char1 == '2' || char1 == 'A') reg = R11;
-		if (char1 == '3' || char1 == 'B') reg = R15;
-		if (char1 == '4' || char1 == 'C') reg = R19;
-		if (char1 == '5' || char1 == 'D') reg = R23;
-		if (char1 == '6' || char1 == 'E') reg = R27;
-		if (char1 == '7' || char1 == 'F') reg = R31;
+		if (char1 == '0' || char1 == '8') return 3;
+		if (char1 == '1' || char1 == '9') return 7;
+		if (char1 == '2' || char1 == 'A') return 11;
+		if (char1 == '3' || char1 == 'B') return 15;
+		if (char1 == '4' || char1 == 'C') return 19;
+		if (char1 == '5' || char1 == 'D') return 23;
+		if (char1 == '6' || char1 == 'E') return 27;
+		if (char1 == '7' || char1 == 'F') return 31;
 
 	}
 
+	return 0;
+
+}
+
+/** 
+ * TODO (comment)
+ */
+int extractSecondRegister(char line[T_MAX]) {
+
+	char char1 = line[2];
+	char char2 = line[3];
+
+	if (char1 == '0' || char1 == '4' || char1 == '8' || char1 == 'C') {
+
+		if (char2 == '0' || char2 == '1') return 0;
+		if (char2 == '2' || char2 == '3') return 1;
+		if (char2 == '4' || char2 == '5') return 2;
+		if (char2 == '6' || char2 == '7') return 3;
+		if (char2 == '8' || char2 == '9') return 4;
+		if (char2 == 'A' || char2 == 'B') return 5;
+		if (char2 == 'C' || char2 == 'D') return 6;
+		if (char2 == 'E' || char2 == 'F') return 7;
+
+	} else if (char1 == '1' || char1 == '5' || char1 == '9' || char1 == 'D') {
+
+		if (char2 == '0' || char2 == '1') return 8;
+		if (char2 == '2' || char2 == '3') return 9;
+		if (char2 == '4' || char2 == '5') return 10;
+		if (char2 == '6' || char2 == '7') return 11;
+		if (char2 == '8' || char2 == '9') return 12;
+		if (char2 == 'A' || char2 == 'B') return 13;
+		if (char2 == 'C' || char2 == 'D') return 14;
+		if (char2 == 'E' || char2 == 'F') return 15;
+
+	} else if (char1 == '2' || char1 == '6' || char1 == 'A' || char1 == 'E') {
+
+		if (char2 == '0' || char2 == '1') return 16;
+		if (char2 == '2' || char2 == '3') return 17;
+		if (char2 == '4' || char2 == '5') return 18;
+		if (char2 == '6' || char2 == '7') return 19;
+		if (char2 == '8' || char2 == '9') return 20;
+		if (char2 == 'A' || char2 == 'B') return 21;
+		if (char2 == 'C' || char2 == 'D') return 22;
+		if (char2 == 'E' || char2 == 'F') return 23;
+
+	} else {
+
+		if (char2 == '0' || char2 == '1') return 24;
+		if (char2 == '2' || char2 == '3') return 25;
+		if (char2 == '4' || char2 == '5') return 26;
+		if (char2 == '6' || char2 == '7') return 27;
+		if (char2 == '8' || char2 == '9') return 28;
+		if (char2 == 'A' || char2 == 'B') return 29;
+		if (char2 == 'C' || char2 == 'D') return 30;
+		if (char2 == 'E' || char2 == 'F') return 31;
+
+	}
+
+	return 0;
+
+}
+
+/** 
+ * TODO (comment)
+ */
+int extractImm(char line[T_MAX]) {
+
+	char char1 = line[3];
+
+	if (char1 == '0' || char1 == '2' || char1 == '4' || char1 == '6' || char1 == '8' || char1 == 'A' || char1 == 'C' || char1 == 'E')
+		return 0;
+
+	return 1;
+
+}
+
+/** 
+ * TODO (comment)
+ */
+int extractS(char line[T_MAX]) {
+
+	shift(line, 4);
+	return hex2dec(line);
+
+}
+
+/********** EXECUTE **********/
+
+/** 
+ * TODO (comment)
+ */
+void display(int registres[35], int PC) {
+
+	for (int i = 0; i < 35; i++) {
+		if (i <= 31) printf("R%d: %d\n", i, registres[i]);
+		if (i == 32) printf("C: %d\n", registres[i]);
+		if (i == 33) printf("N: %d\n", registres[i]);
+		if (i == 34) printf("Z: %d\n", registres[i]);
+	}
+
+	printf("PC: %d\n", PC);
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeOR(int registres[35], int reg1, int reg2, int imm, int S) {
+
+	int result = 0;
+
+	if (imm) {
+		result = registres[reg2] | S;
+	} else {
+		result = registres[reg2] | registres[S];
+	}
+
+	if (reg1 != 0) {
+		registres[reg1] = result;
+	}
+
+	registres[32] = 0;
+	registres[33] = dec2bin(result, 32, 1)[0] - 48;
+	registres[34] = (result == 0) ? 1 : 0;
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void execute(char filename[T_MAX], int registres[35], char memory[65536][2]) {
+
+	/*
+	 * variables
+	 */
+
+	char line[T_MAX] = "";
+	char command[4] = "";
+	int reg1 = 0;
+	int reg2 = 0;
+	int imm = 0;
+	int S = 0;
+	int PC = 0;
+
+	/*
+	 * execution
+	 */
+
+	initializeMemory(filename, memory);
+	initializeRegisters(registres);
+
+	while (strcmp(command, "HLT") != 0) {
+
+		strcpy(line, "");
+		for (int i = 0; i < 4; i++) strcat(line, memory[PC+i]);
+
+		extractCommand(line, command);
+		reg1 = extractFirstRegister(line);
+		reg2 = extractSecondRegister(line);
+		imm = extractImm(line);
+		S = extractS(line);
+
+		if (strcmp(command, "OR") == 0) executeOR(registres, reg1, reg2, imm, S);
+
+		if (command[0] != 'J') PC += 4;
+
+		display(registres, PC);
+
+	}
+
+}
+
+/********** MAIN **********/
+
+int main (int argc, char* argv[]) {
+
+	char filename[T_MAX] = "../testFile.txt";
+
+	if (argc < 2) {
+		printf("FAILURE: filename is required");
+		exit(0);
+	}
+
+	strcpy(filename, argv[1]);
+	execute(filename, registres, memory);
+
+	return 0;
+	
 }
