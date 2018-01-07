@@ -13,7 +13,7 @@
 /** 
  * TODO (comment)
  */
-void initializeMemory(char filename[T_MAX], char memory[65536][2]) {
+void initializeMemory(char filename[T_MAX], char memory[65536][3]) {
 
 	/*
 	* variables
@@ -42,6 +42,7 @@ void initializeMemory(char filename[T_MAX], char memory[65536][2]) {
 		token = strtok(line, " \r\n");
 		for (int i = 0; i < 4; i++) {
 			strcpy(memory[numberLine], token);
+			memory[numberLine][3] = '\0';
 			token = strtok(NULL, " \r\n");
 			numberLine++;
 		}
@@ -259,6 +260,8 @@ int extractS(char line[T_MAX]) {
  */
 void display(int registres[36]) {
 
+	printf("# ---- START DISPLAY ---- #\n");
+
 	for (int i = 0; i < 36; i++) {
 		if (i <= 31) printf("R%d: %s (%d)\n", i, dec2bin(registres[i], 32, 1), registres[i]);
 		if (i == 32) printf("C: %d\n", registres[i]);
@@ -266,6 +269,8 @@ void display(int registres[36]) {
 		if (i == 34) printf("Z: %d\n", registres[i]);
 		if (i == 35) printf("PC: %d\n", registres[i]);
 	}
+
+	printf("# ==== END ==== #\n");
 
 }
 
@@ -276,12 +281,13 @@ void updateRegister(int registres[36], int result, int reg) {
 
 	registres[32] = (result > 2147483647 || result < -2147483648) ? 1 : 0;
 
+
 	result = (result > 2147483647) ? 2147483647 : result;
 	result = (result < -2147483648) ? -2147483648 : result;
 
 	registres[33] = dec2bin(result, 32, 1)[0] - 48;
 	registres[34] = (result == 0) ? 1 : 0;
-	registres[35] = registres[35] * 4;
+	registres[35] += 4;
 
 	if (reg != 0) {
 		registres[reg] = result;
@@ -360,8 +366,14 @@ void executeSUB(int registres[36], int reg1, int reg2, int S) {
 void executeMUL(int registres[36], int reg1, int reg2, int S) {
 
 	int result = 0;
+	char binR[T_MAX] = "";
+	char binS[T_MAX] = "";
 
-	result = bin2dec(shift(dec2bin(registres[reg2], 32, 1), 16)) * bin2dec(shift(dec2bin(S, 32, 1), 16));	
+	strcpy(binR, dec2bin(registres[reg2], 32, 1));
+	shift(binR, 16);
+	strcpy(binS, dec2bin(S, 32, 1));
+	shift(binS, 16);
+	result = bin2dec(binR) * bin2dec(binS);
 
 	updateRegister(registres, result, reg1);
 
@@ -402,7 +414,7 @@ void executeSHR(int registres[36], int reg1, int reg2, int S) {
 /** 
  * TODO (comment)
  */
-void executeLDB(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+void executeLDB(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
 
 	int result = 0;
 
@@ -410,13 +422,12 @@ void executeLDB(int registres[36], char memory[65536][2], int reg1, int reg2, in
 
 	updateRegister(registres, result, reg1);
 
-
 }
 
 /** 
  * TODO (comment)
  */
-void executeLDH(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+void executeLDH(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
 
 	int result = 0;
 	char mem[4] = "";
@@ -433,7 +444,7 @@ void executeLDH(int registres[36], char memory[65536][2], int reg1, int reg2, in
 /** 
  * TODO (comment)
  */
-void executeLDW(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+void executeLDW(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
 
 	int result = 0;
 	char mem[4] = "";
@@ -452,12 +463,16 @@ void executeLDW(int registres[36], char memory[65536][2], int reg1, int reg2, in
 /** 
  * TODO (comment)
  */
-void executeSTB(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+void executeSTB(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
 
 	int result = 0;
+	char binR[T_MAX] = "";
 
-	result = bin2dec(shift(dec2bin(registres[reg2], 32, 1), 24));
-	strcpy(memory[registres[reg1]+S], bin2hex(shift(dec2bin(registres[reg2], 32, 1), 24)));
+	strcpy(binR, dec2bin(registres[reg2], 32, 1));
+	shift(binR, 24);
+	result = bin2dec(binR);
+
+	strcpy(memory[registres[reg1]+S], bin2hex(binR));
 
 	updateRegister(registres, result, 0);
 
@@ -466,21 +481,25 @@ void executeSTB(int registres[36], char memory[65536][2], int reg1, int reg2, in
 /** 
  * TODO (comment)
  */
-void executeSTH(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+void executeSTH(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
 
 	int result = 0;
-	char mem[4] = "";
+	char binR[T_MAX] = "";
 
-	result = bin2dec(shift(dec2bin(registres[reg2], 32, 1), 16));
-	strcpy(memory[registres[reg1]+S], bin2hex(shift(dec2bin(registres[reg2], 32, 1), 16)));
+	strcpy(binR, dec2bin(registres[reg2], 32, 1));
+	shift(binR, 16);
+	result = bin2dec(binR);
+
+	strcpy(memory[registres[reg1]+S], bin2hex(binR));
 
 	updateRegister(registres, result, 0);
+
 }
 
 /** 
  * TODO (comment)
  */
-void executeSTW(int registres[36], char memory[65536][2], int reg1, int reg2, int S) {
+void executeSTW(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
 
 	int result = 0;
 
@@ -496,20 +515,26 @@ void executeSTW(int registres[36], char memory[65536][2], int reg1, int reg2, in
  */
 void executeJ(int registres[36], int S, char command[4]) {
 
-	if (strcmp(command, "JMP")) {
+	if (strcmp(command, "JMP") == 0) {
 		registres[35] = S;
-	} else if (strcmp(command, "JZS")) {
+	} else if (strcmp(command, "JZS") == 0) {
 		if (registres[34]) registres[35] = S;
-	} else if (strcmp(command, "JZC")) {
+		else registres[35] += 4;
+	} else if (strcmp(command, "JZC") == 0) {
 		if (!registres[34]) registres[35] = S;
-	} else if (strcmp(command, "JCS")) {
+		else registres[35] += 4;
+	} else if (strcmp(command, "JCS") == 0) {
 		if (registres[32]) registres[35] = S;
-	} else if (strcmp(command, "JCC")) {
+		else registres[35] += 4;
+	} else if (strcmp(command, "JCC") == 0) {
 		if (!registres[32]) registres[35] = S;
-	} else if (strcmp(command, "JNS")) {
+		else registres[35] += 4;
+	} else if (strcmp(command, "JNS") == 0) {
 		if (registres[33]) registres[35] = S;
-	} else if (strcmp(command, "JNC")) {
+		else registres[35] += 4;
+	} else if (strcmp(command, "JNC") == 0) {
 		if (!registres[33]) registres[35] = S;
+		else registres[35] += 4;
 	}
 
 }
@@ -549,7 +574,7 @@ void executeRND(int registres[36], int reg1, int reg2, int S) {
 
 	int result = 0;
 
-	result = rand()%(S - registres[reg2]) + registres[reg2]
+	result = rand()%(S - registres[reg2]) + registres[reg2];
 
 	updateRegister(registres, result, reg1);
 
@@ -558,7 +583,7 @@ void executeRND(int registres[36], int reg1, int reg2, int S) {
 /** 
  * TODO (comment)
  */
-void execute(char filename[T_MAX], int registres[36], char memory[65536][2]) {
+void execute(char filename[T_MAX], int registres[36], char memory[65536][3]) {
 
 	/*
 	 * variables
@@ -582,13 +607,14 @@ void execute(char filename[T_MAX], int registres[36], char memory[65536][2]) {
 	while (strcmp(command, "HLT") != 0) {
 
 		strcpy(line, "");
-		for (int i = 0; i < 4; i++) strcat(line, memory[PC+i]);
-
+		for (int i = 0; i < 4; i++) strcat(line, memory[registres[35]+i]);
+		line[strlen(line)] = '\0';
+		
 		extractCommand(line, command);
 		reg1 = extractFirstRegister(line);
 		reg2 = extractSecondRegister(line);
 		imm = extractImm(line);
-		S = imm ? registres[extractS(line)] : extractS(line);
+		S = imm ? extractS(line) : registres[extractS(line)];
 
 		if (strcmp(command, "OR") == 0) executeOR(registres, reg1, reg2, S);
 		if (strcmp(command, "XOR") == 0) executeXOR(registres, reg1, reg2, S);

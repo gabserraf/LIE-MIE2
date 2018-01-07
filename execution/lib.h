@@ -26,7 +26,7 @@ int registres[36];
  * MEMORY
  */
 
-char memory[65536][2];
+char memory[65536][3];
 
 /*
  * FUNCS
@@ -43,7 +43,7 @@ int hex2dec (char hex[T_MAX]);
 
 /* execution */
 
-void initializeMemory(char filename[T_MAX], char memory[65536][2]);
+void initializeMemory(char filename[T_MAX], char memory[65536][3]);
 void initializeRegisters(int registres[36]);
 void extractCommand(char line[T_MAX], char command[4]);
 int extractFirstRegister(char line[T_MAX]);
@@ -59,16 +59,16 @@ void executeSUB(int registres[36], int reg1, int reg2, int S);
 void executeMUL(int registres[36], int reg1, int reg2, int S);
 void executeDIV(int registres[36], int reg1, int reg2, int S);
 void executeSHR(int registres[36], int reg1, int reg2, int S);
-void executeLDB(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
-void executeLDH(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
-void executeLDW(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
-void executeSTB(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
-void executeSTH(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
-void executeSTW(int registres[36], char memory[65536][2], int reg1, int reg2, int S);
+void executeLDB(int registres[36], char memory[65536][3], int reg1, int reg2, int S);
+void executeLDH(int registres[36], char memory[65536][3], int reg1, int reg2, int S);
+void executeLDW(int registres[36], char memory[65536][3], int reg1, int reg2, int S);
+void executeSTB(int registres[36], char memory[65536][3], int reg1, int reg2, int S);
+void executeSTH(int registres[36], char memory[65536][3], int reg1, int reg2, int S);
+void executeSTW(int registres[36], char memory[65536][3], int reg1, int reg2, int S);
 void executeIN(int registres[36], int reg1);
 void executeOUT(int registres[36], int reg1);
 void executeRND(int registres[36], int reg1, int reg2, int S);
-void execute(char filename[T_MAX], int registres[36], char memory[65536][2]);
+void execute(char filename[T_MAX], int registres[36], char memory[65536][3]);
 
 /*
  * END
