@@ -414,99 +414,142 @@ void executeSHR(int registres[36], int reg1, int reg2, int S) {
 /** 
  * TODO (comment)
  */
-void executeLDB(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
-
-	int result = 0;
-
-	result = hex2dec(memory[registres[reg2]+S]);
-
-	updateRegister(registres, result, reg1);
-
-}
-
-/** 
- * TODO (comment)
- */
-void executeLDH(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
-
-	int result = 0;
-	char mem[4] = "";
-
-	strcat(mem, memory[registres[reg2]+S]);
-	strcat(mem, memory[registres[reg2]+S+1]);
-
-	result = hex2dec(mem);
-
-	updateRegister(registres, result, reg1);
-
-}
-
-/** 
- * TODO (comment)
- */
-void executeLDW(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
-
-	int result = 0;
-	char mem[4] = "";
-
-	strcat(mem, memory[registres[reg2]+S]);
-	strcat(mem, memory[registres[reg2]+S+1]);
-	strcat(mem, memory[registres[reg2]+S+2]);
-	strcat(mem, memory[registres[reg2]+S+3]);
-
-	result = hex2dec(mem);
-
-	updateRegister(registres, result, reg1);
-
-}
-
-/** 
- * TODO (comment)
- */
-void executeSTB(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
+void executeLDB(int registres[36], int reg1, int reg2, int S) {
 
 	int result = 0;
 	char binR[T_MAX] = "";
 
-	strcpy(binR, dec2bin(registres[reg2], 32, 1));
-	shift(binR, 24);
-	result = bin2dec(binR);
+	if (registres[reg2]+S >= 0 && registres[reg2]+S <= 31) {
 
-	strcpy(memory[registres[reg1]+S], bin2hex(binR));
+		strcpy(binR, dec2bin(registres[registres[reg2]+S], 32, 1));
+		shift(binR, 24);
+		result = bin2dec(binR);
 
-	updateRegister(registres, result, 0);
+		registres[reg1] = result;
+
+		updateRegister(registres, result, reg1);
+
+	} else {
+		printf("FAILURE: LDB Greater than 32");
+		exit(0);
+	}
 
 }
 
 /** 
  * TODO (comment)
  */
-void executeSTH(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
+void executeLDH(int registres[36], int reg1, int reg2, int S) {
 
 	int result = 0;
 	char binR[T_MAX] = "";
 
-	strcpy(binR, dec2bin(registres[reg2], 32, 1));
-	shift(binR, 16);
-	result = bin2dec(binR);
+	if (registres[reg2]+S >= 0 && registres[reg2]+S <= 31) {
 
-	strcpy(memory[registres[reg1]+S], bin2hex(binR));
+		strcpy(binR, dec2bin(registres[registres[reg2]+S], 32, 1));
+		shift(binR, 16);
+		result = bin2dec(binR);
 
-	updateRegister(registres, result, 0);
+		registres[reg1] = result;
+
+		updateRegister(registres, result, reg1);
+
+	} else {
+		printf("FAILURE: LDH Greater than 32");
+		exit(0);
+	}
 
 }
 
 /** 
  * TODO (comment)
  */
-void executeSTW(int registres[36], char memory[65536][3], int reg1, int reg2, int S) {
+void executeLDW(int registres[36], int reg1, int reg2, int S) {
 
 	int result = 0;
 
-	result = registres[reg2];
-	strcpy(memory[registres[reg1]+S], bin2hex(dec2bin(result, 32, 1)));
+	if (registres[reg2]+S >= 0 && registres[reg2]+S <= 31) {
 
-	updateRegister(registres, result, 0);
+		result = registres[registres[reg2]+S];
+		registres[reg1] = result;
+
+		updateRegister(registres, result, reg1);
+
+	} else {
+		printf("FAILURE: LDW Greater than 32");
+		exit(0);
+	}
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeSTB(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+	char binR[T_MAX] = "";
+
+	if (registres[reg1]+S >= 0 && registres[reg1]+S <= 31) {
+
+		strcpy(binR, dec2bin(registres[reg2], 32, 1));
+		shift(binR, 24);
+		result = bin2dec(binR);
+
+		registres[registres[reg1]+S] = result;
+
+		updateRegister(registres, result, 0);
+
+	} else {
+		printf("FAILURE: STB Greater than 32");
+		exit(0);
+	}
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeSTH(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+	char binR[T_MAX] = "";
+
+	if (registres[reg1]+S >= 0 && registres[reg1]+S <= 31) {
+
+		strcpy(binR, dec2bin(registres[reg2], 32, 1));
+		shift(binR, 16);
+		result = bin2dec(binR);
+
+		registres[registres[reg1]+S] = result;
+
+		updateRegister(registres, result, 0);
+
+	} else {
+		printf("FAILURE: STH Greater than 32");
+		exit(0);
+	}
+
+}
+
+/** 
+ * TODO (comment)
+ */
+void executeSTW(int registres[36], int reg1, int reg2, int S) {
+
+	int result = 0;
+
+	if (registres[reg1]+S >= 0 && registres[reg1]+S <= 31) {
+
+		result = registres[registres[reg1]+S];
+		registres[reg2] = result;
+
+		updateRegister(registres, result, reg1);
+
+	} else {
+		printf("FAILURE: STW Greater than 32");
+		exit(0);
+	}
 
 }
 
@@ -624,12 +667,12 @@ void execute(char filename[T_MAX], int registres[36], char memory[65536][3]) {
 		if (strcmp(command, "MUL") == 0) executeMUL(registres, reg1, reg2, S);
 		if (strcmp(command, "DIV") == 0) executeDIV(registres, reg1, reg2, S);
 		if (strcmp(command, "SHR") == 0) executeSHR(registres, reg1, reg2, S);
-		if (strcmp(command, "LDB") == 0) executeLDB(registres, memory, reg1, reg2, S);
-		if (strcmp(command, "LDH") == 0) executeLDH(registres, memory, reg1, reg2, S);
-		if (strcmp(command, "LDW") == 0) executeLDW(registres, memory, reg1, reg2, S);
-		if (strcmp(command, "STB") == 0) executeSTB(registres, memory, reg1, reg2, S);
-		if (strcmp(command, "STH") == 0) executeSTH(registres, memory, reg1, reg2, S);
-		if (strcmp(command, "STW") == 0) executeSTW(registres, memory, reg1, reg2, S);
+		if (strcmp(command, "LDB") == 0) executeLDB(registres, reg1, reg2, S);
+		if (strcmp(command, "LDH") == 0) executeLDH(registres, reg1, reg2, S);
+		if (strcmp(command, "LDW") == 0) executeLDW(registres, reg1, reg2, S);
+		if (strcmp(command, "STB") == 0) executeSTB(registres, reg1, reg2, S);
+		if (strcmp(command, "STH") == 0) executeSTH(registres, reg1, reg2, S);
+		if (strcmp(command, "STW") == 0) executeSTW(registres, reg1, reg2, S);
 		if (command[0] == 'J') executeJ(registres, S, command);
 		if (strcmp(command, "IN") == 0) executeIN(registres, reg1);
 		if (strcmp(command, "OUT") == 0) executeOUT(registres, reg1);
